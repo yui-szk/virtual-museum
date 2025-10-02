@@ -23,10 +23,24 @@ func main() {
     cfg := config.Load()
     log := logger.New(cfg.Env)
 
-    // Repository and service wiring (in-memory for now)
-    repo := repository.NewInMemoryItemRepository()
-    // Seed a couple of items for convenience in dev
-    _ = repo.MustSeed("First item", "Second item")
+    // Repository and service wiring
+    var repo repository.ItemRepository
+    if cfg.DBEnabled {
+        dsn := cfg.MySQLDSN()
+        if mysqlRepo, err := repository.NewMySQLItemRepository(dsn, cfg.DBMigrate); err != nil {
+            log.Error("mysql connect failed; falling back to memory", slog.String("error", err.Error()))
+            mem := repository.NewInMemoryItemRepository()
+            _ = mem.MustSeed("First item", "Second item")
+            repo = mem
+        } else {
+            log.Info("using mysql repository")
+            repo = mysqlRepo
+        }
+    } else {
+        mem := repository.NewInMemoryItemRepository()
+        _ = mem.MustSeed("First item", "Second item")
+        repo = mem
+    }
     svc := service.NewItemService(repo)
 
     router := httpserver.NewRouter(cfg, log, svc)
@@ -61,4 +75,3 @@ func main() {
     }
     log.Info("server stopped")
 }
-
