@@ -14,7 +14,7 @@ jobs:
         if: github.event_name == 'push'
         run: |
           COMMITS=$(jq -r '.commits[] | "- " + .message + " (" + .id[0:7] + ") by " + .author.username' <<< '${{ toJson(github.event) }}' | head -n 5)
-          CONTENT="**[PUSH]** \`${{ github.repository }}\` → **${{ github.ref_name }}** by **${{ github.actor }}**%0A${COMMITS}"
+          CONTENT="**[PUSH]** \`${{ github.repository }}\` → **${{ github.ref_name }}** by **${{ github.actor }}**\n${COMMITS}"
           echo "CONTENT=$CONTENT" >> $GITHUB_ENV
 
       - name: Build message for PR
@@ -32,7 +32,7 @@ jobs:
           else
             PREFIX="**[PR ${ACTION^^}]**"
           fi
-          CONTENT="${PREFIX} #${NUMBER} **${TITLE}**%0A\`${FROM}\` → \`${TO}\`%0A${URL}"
+          CONTENT="${PREFIX} #${NUMBER} **${TITLE}**\n\`${FROM}\` → \`${TO}\`\n${URL}"
           echo "CONTENT=$CONTENT" >> $GITHUB_ENV
 
       - name: Build message for PR Review
@@ -41,7 +41,7 @@ jobs:
           STATE=$(jq -r '.review.state' <<< '${{ toJson(github.event) }}')
           NUMBER=${{ github.event.pull_request.number }}
           URL=$(jq -r '.review.html_url' <<< '${{ toJson(github.event) }}')
-          CONTENT="**[PR REVIEW]** #${NUMBER} → **${STATE^^}** by **${{ github.actor }}**%0A${URL}"
+          CONTENT="**[PR REVIEW]** #${NUMBER} → **${STATE^^}** by **${{ github.actor }}**\n${URL}"
           echo "CONTENT=$CONTENT" >> $GITHUB_ENV
 
       - name: Post to Discord
