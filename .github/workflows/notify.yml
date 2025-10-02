@@ -10,13 +10,6 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Build message for push
-        if: github.event_name == 'push'
-        run: |
-          COMMITS=$(jq -r '.commits[] | "- " + .message + " (" + .id[0:7] + ") by " + .author.username' <<< '${{ toJson(github.event) }}' | head -n 5)
-          CONTENT="**[PUSH]** \`${{ github.repository }}\` → **${{ github.ref_name }}** by **${{ github.actor }}**\n${COMMITS}"
-          echo "CONTENT=$CONTENT" >> $GITHUB_ENV
-
       - name: Build message for PR
         if: github.event_name == 'pull_request'
         run: |
@@ -27,13 +20,20 @@ jobs:
           FROM=$(jq -r '.pull_request.head.ref' <<< '${{ toJson(github.event) }}')
           TO=$(jq -r '.pull_request.base.ref' <<< '${{ toJson(github.event) }}')
           MERGED=$(jq -r '.pull_request.merged' <<< '${{ toJson(github.event) }}')
+
           if [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then
             PREFIX="**[PR MERGED]**"
           else
             PREFIX="**[PR ${ACTION^^}]**"
           fi
+
           CONTENT="${PREFIX} #${NUMBER} **${TITLE}**\n\`${FROM}\` → \`${TO}\`\n${URL}"
-          echo "CONTENT=$CONTENT" >> $GITHUB_ENV
+
+          {
+            echo "CONTENT<<EOF"
+            echo -e "$CONTENT"
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Build message for PR Review
         if: github.event_name == 'pull_request_review'
@@ -42,17 +42,22 @@ jobs:
           NUMBER=${{ github.event.pull_request.number }}
           URL=$(jq -r '.review.html_url' <<< '${{ toJson(github.event) }}')
           CONTENT="**[PR REVIEW]** #${NUMBER} → **${STATE^^}** by **${{ github.actor }}**\n${URL}"
-          echo "CONTENT=$CONTENT" >> $GITHUB_ENV
+
+          {
+            echo "CONTENT<<EOF"
+            echo -e "$CONTENT"
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Post to Discord
         env:
           WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
           CONTENT: ${{ env.CONTENT }}
         run: |
-          # Embedの例（必要なら色やフィールドを足せます）
           jq -n --arg content "$CONTENT" \
             '{content: $content}' \
             > payload.json
+
           curl -s -H "Content-Type: application/json" \
                -X POST \
                -d @payload.json \
