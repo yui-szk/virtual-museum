@@ -19,7 +19,6 @@ RUN CGO_ENABLED=0 go install github.com/air-verse/air@latest \
     && CGO_ENABLED=0 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 # Pre-cache modules to speed up first run
-# go.sum も一緒にコピーして依存解決の揺れを無くす
 COPY go.mod go.sum ./
 RUN go mod download
 

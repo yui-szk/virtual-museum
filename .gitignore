@@ -10,7 +10,6 @@ app/backend/tmp/
 app/backend/coverage/
 app/backend/.air.toml.local
 app/backend/wire_gen.go
-app/backend/go.sum
 
 # Docker
 **/.cache/
