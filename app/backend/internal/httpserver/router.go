@@ -1,0 +1,80 @@
+package httpserver
+
+import (
+    "encoding/json"
+    "log/slog"
+    "net/http"
+
+    "github.com/go-chi/chi/v5"
+    "github.com/go-chi/cors"
+
+    "backend/internal/config"
+    "backend/internal/service"
+)
+
+// NewRouter configures chi router, CORS, and registers routes.
+func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService) http.Handler {
+    r := chi.NewRouter()
+
+    // CORS
+    r.Use(cors.Handler(cors.Options{
+        AllowedOrigins:   cfg.AllowedOrigins,
+        AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+        AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+        ExposedHeaders:   []string{"Link"},
+        AllowCredentials: false,
+        MaxAge:           300,
+    }))
+
+    // Health
+    r.Get("/health", func(w http.ResponseWriter, _ *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        _ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+    })
+
+    // API routes
+    r.Route("/api/v1", func(api chi.Router) {
+        // GET /items -> list
+        api.Get("/items", func(w http.ResponseWriter, r *http.Request) {
+            items, err := itemSvc.List()
+            if err != nil {
+                respondError(w, http.StatusInternalServerError, "failed to list items")
+                log.Error("list items failed", slog.String("error", err.Error()))
+                return
+            }
+            respondJSON(w, http.StatusOK, items)
+        })
+
+        // POST /items -> create with basic validation
+        type createReq struct {
+            Name string `json:"name"`
+        }
+
+        api.Post("/items", func(w http.ResponseWriter, r *http.Request) {
+            var req createReq
+            if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+                respondError(w, http.StatusBadRequest, "invalid JSON body")
+                return
+            }
+            item, err := itemSvc.Create(req.Name)
+            if err != nil {
+                respondError(w, http.StatusBadRequest, err.Error())
+                return
+            }
+            respondJSON(w, http.StatusCreated, item)
+        })
+    })
+
+    return r
+}
+
+func respondJSON(w http.ResponseWriter, status int, v any) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(status)
+    _ = json.NewEncoder(w).Encode(v)
+}
+
+func respondError(w http.ResponseWriter, status int, msg string) {
+    respondJSON(w, status, map[string]string{"error": msg})
+}
+

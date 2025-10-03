@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.25.1-alpine
+WORKDIR /app
+
+# Dev utilities and certificates for HTTPS/wget/curl
+RUN apk add --no-cache git bash build-base curl wget ca-certificates
+
+# Ensure Go-installed tools are on PATH (runtime too)
+ENV GOPATH=/go \
+    GO111MODULE=on \
+    PATH="/usr/local/go/bin:/go/bin:${PATH}"
+
+RUN ln -sf /usr/local/go/bin/go /usr/local/bin/go
+# ------------------
+
+# Install dev tools (disable CGO to avoid needing external ld linker)
+RUN CGO_ENABLED=0 go install github.com/air-verse/air@latest \
+    && CGO_ENABLED=0 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+# Pre-cache modules to speed up first run
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Bring in source (will be bind-mounted in compose during dev)
+COPY . .
+
+EXPOSE 8080
+CMD ["air", "-c", ".air.toml"]

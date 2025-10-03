@@ -1,0 +1,16 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # Build into tmp/ to avoid file watcher loops and match requested paths
+  cmd = "go build -o ./tmp/server ./cmd/server"
+  bin = "tmp/server"
+  full_bin = ""
+  include_ext = ["go"]
+  exclude_dir = ["vendor", "bin", "tmp"]
+  send_interrupt = true
+  kill_delay = 500
+
+[log]
+  time = true
+

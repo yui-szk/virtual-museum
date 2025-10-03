@@ -1,0 +1,9 @@
+bin
+tmp
+vendor
+.git
+**/*.swp
+**/*.log
+**/*~
+wire_gen.go
+
