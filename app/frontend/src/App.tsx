@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import TopPage from './TopPage'; 
+import TopPage from './components/TopPage'; 
 import MuseumScreen from "./components/MuseumScreen";
 
 import CreationScreen from "./components/CreationScreen";
@@ -11,7 +11,7 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
-        <div className="bg-gradient-to-b overflow-y-hidden from-gray-50 to-gray-100 flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-b overflow-y-hidden from-gray-50 to-gray-100 flex flex-col items-center justify-center">
             <Routes>
             <Route path="/" element={<TopPage />} />
 
