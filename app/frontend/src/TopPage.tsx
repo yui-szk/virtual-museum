@@ -11,16 +11,13 @@ const handleDoorClick = (doorName: string) => {
   alert(`${doorName}が押されました！`);
 };
 
-// TODO: userIdが自分の場合はisMineをtrueにする処理の追加
-
 // ドアの情報を定義する型
-// TODO: テーブルからの取得にはcolorとinMineは不要
+// TODO: テーブルからの取得にはcolorは不要
 interface Door {
   id: number;
   user_id: number; // Museumテーブルに合わせて追加
   name: string; // Museumテーブルのname
   color: string; // ドアの色
-  isMine: boolean;
 }
 //* ドアの色作成する関数
 const getRandomColor = (): string => {
@@ -40,19 +37,16 @@ const getRandomColor = (): string => {
 // ドアのデータ配列 (user_idと美術館のnameを模した値を設定)
 // HACK: 本来はサーバーから取得するが、今回は静的データで代用
 const doorsData: Door[] = [
-  // 自分の部屋
-  { id: 1, user_id: 100, name: '自分の部屋', color: getRandomColor(), isMine: true }, 
-  // 他の人の部屋 (美術館の名前を設定)
-  { id: 2, user_id: 201, name: '夕暮れの美術館', color: getRandomColor(), isMine: false }, 
-  { id: 3, user_id: 202, name: '海の景色', color: getRandomColor(), isMine: false }, 
-  { id: 4, user_id: 203, name: '未来派ギャラリー', color: getRandomColor(), isMine: false }, 
-  { id: 5, user_id: 204, name: '光と影の部屋', color: getRandomColor(), isMine: false }, 
-  
-  { id: 6, user_id: 205, name: '深淵の青', color: getRandomColor(), isMine: false }, 
-  { id: 7, user_id: 206, name: '黄金の肖像画', color: getRandomColor(), isMine: false }, 
-  { id: 8, user_id: 207, name: '情熱のキャンバス', color: getRandomColor(), isMine: false }, 
-  { id: 9, user_id: 208, name: '太陽のホール', color: getRandomColor(), isMine: false }, 
-  { id: 10, user_id: 209, name: '静寂の展示室', color: getRandomColor(), isMine: false }, 
+  { id: 1, user_id: 100, name: '自分の部屋', color: getRandomColor()},
+  { id: 2, user_id: 201, name: '夕暮れの美術館', color: getRandomColor()},
+  { id: 3, user_id: 202, name: '海の景色', color: getRandomColor()},
+  { id: 4, user_id: 203, name: '未来派ギャラリー', color: getRandomColor()},
+  { id: 5, user_id: 204, name: '光と影の部屋', color: getRandomColor()},
+  { id: 6, user_id: 205, name: '深淵の青', color: getRandomColor()},
+  { id: 7, user_id: 206, name: '黄金の肖像画', color: getRandomColor()},
+  { id: 8, user_id: 207, name: '情熱のキャンバス', color: getRandomColor()},
+  { id: 9, user_id: 208, name: '太陽のホール', color: getRandomColor()},
+  { id: 10, user_id: 209, name: '静寂の展示室', color: getRandomColor()},
 ];
 
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント
