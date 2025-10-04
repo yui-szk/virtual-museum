@@ -60,13 +60,13 @@ export default function TopPage() {
     // 新規作成ボタンが押された時の動作
     const handleNewCreationClick = () => {
         // '新規作成'用のCreationPageに遷移させるパスを設定
-        handleNavigate('/creation/new'); //! 仮のパス
+        handleNavigate('/create/new'); //HACK: 仮のパス
     };
 
     // 自分の部屋一覧ボタンが押された時の動作
     const handleMyRoomsClick = () => {
         // 自分の部屋一覧ページに遷移させるパスを設定
-        handleNavigate('/my-rooms'); //! 仮のパス
+        handleNavigate('/show'); //HACK: 仮のパス
     };
 
 
