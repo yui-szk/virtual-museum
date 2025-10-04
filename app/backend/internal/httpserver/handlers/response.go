@@ -5,14 +5,24 @@ import (
 	"net/http"
 )
 
-// respondJSON sends a JSON response with the given status code and data
-func respondJSON(w http.ResponseWriter, status int, v any) {
+// RespondJSON sends a JSON response with the given status code and data
+func RespondJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-// respondError sends a JSON error response
+// RespondError sends a JSON error response
+func RespondError(w http.ResponseWriter, status int, msg string) {
+	RespondJSON(w, status, map[string]string{"error": msg})
+}
+
+// respondJSON sends a JSON response with the given status code and data (internal use)
+func respondJSON(w http.ResponseWriter, status int, v any) {
+	RespondJSON(w, status, v)
+}
+
+// respondError sends a JSON error response (internal use)
 func respondError(w http.ResponseWriter, status int, msg string) {
-	respondJSON(w, status, map[string]string{"error": msg})
+	RespondError(w, status, msg)
 }
