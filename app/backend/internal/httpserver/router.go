@@ -14,7 +14,7 @@ import (
 )
 
 // NewRouter configures chi router, CORS, and registers routes.
-func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService, , museumSvc *service.MuseumService) http.Handler {
+func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService, museumSvc *service.MuseumService) http.Handler {
     r := chi.NewRouter()
 
     // CORS
