@@ -15,8 +15,14 @@ import (
 )
 
 // NewRouter configures chi router, CORS, and registers routes.
-func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService) http.Handler {
+func NewRouter(cfg config.Config, log *slog.Logger, metSvc *service.MetService) http.Handler {
     r := chi.NewRouter()
+
+	// ---- Middlewares
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(5 * time.Second))
 
     // CORS
     r.Use(cors.Handler(cors.Options{
@@ -36,26 +42,11 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
 
     // API routes
     r.Route("/api/v1", func(api chi.Router) {
-        // the MET API proxy
-        metSvc := service.NewMetService()
+        // Handlers
+        metHandler := handlers.NewMetHandler(log, metSvc)
 
         // GET /met/objects/{id}
-        api.Get("/met/objects/{id}", func(w http.ResponseWriter, r *http.Request) {
-            idStr := chi.URLParam(r, "id")
-            id, err := strconv.Atoi(idStr)
-            if err != nil {
-                respondError(w, http.StatusBadRequest, "invalid id")
-                return
-            }
-
-            obj, err := metSvc.GetObjectByID(id)
-            if err != nil {
-                respondError(w, http.StatusBadGateway, fmt.Sprintf("MET API error: %v", err))
-                return
-            }
-
-            respondJSON(w, http.StatusOK, obj)
-        })
+        api.Get("/met/objects/{id}",metHandler.GetObjectByID)
     })
 
     return r
