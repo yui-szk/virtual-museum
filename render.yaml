@@ -8,11 +8,11 @@ services:
     dockerfilePath: app/backend/Dockerfile
     plan: free
     healthCheckPath: /healthz
-    autoDeployTrigger: commit
+    autoDeploy: true
     envVars:
       - key: PORT
         value: "8080"
-      # DBを使うなら以下追加
+      # DBを使うなら以下
       - key: DB_HOST
         value: mysql
       - key: DB_PORT
@@ -25,13 +25,13 @@ services:
         value: appdb
 
   # ================
-  # Frontend (Static site via Vite build)
+  # Frontend (Vite → Static)
   # ================
   - type: web
     name: frontend
     runtime: static
     plan: free
-    autoDeployTrigger: commit
+    autoDeploy: true
     buildCommand: |
       cd app/frontend
       npm ci
@@ -43,17 +43,18 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://backend.onrender.com  # ← デプロイ後に backend 実URLに書き換え
+        value: https://backend.onrender.com  # デプロイ後に実URLへ更新
 
   # ================
-  # (任意) MySQL as internal service
+  # MySQL (Private Service)
   # ================
   - type: pserv
     name: mysql
     runtime: docker
     plan: starter
-    autoDeployTrigger: commit
-    image: docker.io/mysql:8.4
+    autoDeploy: true
+    image:
+      url: docker.io/mysql:8.4   # ← 文字列ではなくオブジェクトで指定
     envVars:
       - key: MYSQL_DATABASE
         value: appdb
