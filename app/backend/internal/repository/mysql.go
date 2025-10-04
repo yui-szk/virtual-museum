@@ -48,14 +48,24 @@ func NewMySQLItemRepository(dsn string, migrate bool) (*MySQLItemRepository, err
 	return &MySQLItemRepository{db: db}, nil
 }
 
+// email重複なし、nullなし
 func ensureSchema(db *sql.DB) error {
 	stmts := []string{
-		`CREATE TABLE IF NOT EXISTS items (
+        `CREATE TABLE IF NOT EXISTS items (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(100) NOT NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
-	}
+        
+        `CREATE TABLE IF NOT EXISTS users (
+            id BIGINT PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            pass_hash VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_email (email)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+    }
 	for _, s := range stmts {
 		if _, err := db.Exec(s); err != nil {
 			return fmt.Errorf("schema: %w", err)
