@@ -59,11 +59,11 @@ const RightSidebar: React.FC<{ artworks: Artwork[] }> = ({ artworks }) => (
   </div>
 );
 
-//* 左側の背景リストコンポーネント (パディング p-1 に縮小済み)
+//* 左側の背景リストコンポーネント
 const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSelect }) => (
-  <div className="w-40 flex-shrink-0 bg-gray-100 border-r border-gray-300 overflow-y-auto p-1">
+  <div className="w-40 flex-shrink-0 bg-gray-100 border-r border-gray-300 overflow-y-auto p-2">
     <h3 className="text-sm font-semibold mb-1 text-gray-700">背景</h3>
-    <div className="space-y-1">
+    <div className="space-y-4">
       {backgrounds.map((bg) => (
         <div key={bg.id} className="cursor-pointer" onClick={() => onBackgroundSelect(bg.url)}>
           <p className="text-xs text-gray-600 mb-1">{bg.name}</p>
@@ -92,7 +92,7 @@ export default function CreationPage() {
 
   return (
     // 画面全体を覆うコンテナ (Flexboxを適用)
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
 
       {/* 画面タイトル */}
       <header className="flex-shrink-0 p-3 bg-white border-b border-gray-200">
@@ -109,7 +109,7 @@ export default function CreationPage() {
         onBackgroundSelect={handleBackgroundChange}
       />
         {/* 中央の絵を配置する */}
-        <div className="flex-1 flex flex-col items-center p-0 relative overflow-y-auto bg-gray-200">
+        <div className="flex-1 flex flex-col items-center p-3 relative overflow-y-auto bg-gray-200">
 
           {/* Gallery View - 画像コンテナ */}
             <div className="relative w-full overflow-hidden flex justify-center items-center aspect-video">
