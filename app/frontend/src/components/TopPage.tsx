@@ -87,14 +87,13 @@ export default function TopPage() {
   );
 }
 
-//?-------------------------------------------------------------
 // ドアコンポーネントのProps型
 interface DoorProps {
   door: Door;
   onClick: (doorId: number) => void;
 }
 
-// ドアコンポーネント（Tailwind CSS 版）
+// ドアコンポーネント
 const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
   return (
     <div
@@ -102,10 +101,10 @@ const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
       className="relative w-full h-[250px] cursor-pointer select-none transition-transform duration-100 ease-in-out rounded-sm border-8 border-gray-800 shadow-md flex flex-col items-center justify-start overflow-hidden hover:scale-[1.03]"
       style={{ backgroundColor: door.color }}
     >
-      {/* 内側の段差パネル（画像のような枠） */}
+      {/* 内側の段差パネル */}
       <div className="absolute top-4 left-4 right-4 bottom-4 border-2 border-gray-800 shadow-inner"/>
 
-      {/* ドアハンドル（丸い・右側） */}
+      {/* ドアハンドル */}
       <div className="absolute right-[12px] top-1/2 -translate-y-1/2 w-4 h-4 bg-gray-300 border border-gray-700 rounded-full"/>
 
       {/* ドア名ラベル */}

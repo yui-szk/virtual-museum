@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import TopPage from './TopPage'; 
+import TopPage from './components/TopPage'; 
 import MuseumScreen from "./components/MuseumScreen";
 
 import CreationScreen from "./components/CreationScreen";
