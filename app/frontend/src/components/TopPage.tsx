@@ -73,7 +73,7 @@ export default function TopPage() {
         </button>
       </div>
       <div className="grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto my-10">
-        {doorsData.map((door) => (
+        {doorsData.slice(0, 10).map((door) => (
           <DoorComponent key={door.id} door={door} onClick={() => handleDoorClick(door.id)} />
         ))}
       </div>
