@@ -87,17 +87,7 @@ export default function TopPage() {
                 className="px-4 py-2 bg-blue-400 text-white font-semibold border border-blue-600 rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
             >新規作成</button>
         </div>
-      <div 
-        style={{
-          display: 'grid',
-          // 2行5列のグリッドレイアウトでドアを配置
-          gridTemplateColumns: 'repeat(5, 1fr)', 
-          gridTemplateRows: 'repeat(2, 1fr)',
-          gap: '10px',
-          maxWidth: '800px', // ドアを並べるエリアの最大幅を設定
-          margin: '40px auto', // 中央寄せ
-        }}
-      >
+      <div className="grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto my-10">
         {doorsData.map((door) => (
           <DoorComponent key={door.id} door={door} onClick={handleDoorClick} />
         ))}
