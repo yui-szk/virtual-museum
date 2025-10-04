@@ -1,5 +1,10 @@
 import React from 'react';
 
+// 【追加】window.location.href を使用する場合、ここに宣言
+const handleNavigate = (path: string) => {
+    window.location.href = path;
+};
+
 //* ドアが押された時の動作を定義する関数
 //! 今回はアラート表示のみ、あとで部屋への移動に変更
 const handleDoorClick = (doorName: string) => {
@@ -52,10 +57,37 @@ const doorsData: Door[] = [
 
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント。
 export default function TopPage() {
+    //! 各画面に遷移するように要変更
+    // 新規作成ボタンが押された時の動作
+    const handleNewCreationClick = () => {
+        // '新規作成'用のCreationPageに遷移させるパスを設定
+        handleNavigate('/creation/new'); //! 仮のパス
+    };
+
+    // 自分の部屋一覧ボタンが押された時の動作
+    const handleMyRoomsClick = () => {
+        // 自分の部屋一覧ページに遷移させるパスを設定
+        handleNavigate('/my-rooms'); //! 仮のパス
+    };
+
+
   return (
     <div className="container" style={{ textAlign: 'center', padding: '50px' }}>
-      <h1>トップページ_美術館への移動</h1>
-      
+        {/* 左右にボタンを配置し、中央に余白（justify-between）を持たせる */}
+        <div className="flex justify-between items-center mb-4 w-full" style={{ maxWidth: '800px', margin: '0 auto' }}>
+                
+            {/* 左側のボタン: 自分の部屋一覧 */}
+            <button 
+                onClick={handleMyRoomsClick}
+                className="px-4 py-2 bg-blue-400 text-white font-semibold border border-blue-600 rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
+            >自分の部屋一覧</button>
+
+            {/* 右側のボタン: 新規作成 */}
+            <button 
+                onClick={handleNewCreationClick}
+                className="px-4 py-2 bg-blue-400 text-white font-semibold border border-blue-600 rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
+            >新規作成</button>
+        </div>
       <div 
         style={{
           display: 'grid',
