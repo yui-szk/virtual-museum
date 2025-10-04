@@ -18,9 +18,9 @@ export default function App() {
             <Route path="/view" element={<MuseumScreen />} />
             <Route path="/create" element={<CreationScreen />} />
             <Route path="/view/:museumId" element={<MuseumScreen />} />
+            <Route path="/museum/:museumId" element={<MuseumScreen />} />
             <Route path="/show" element={<MuseumMyListScreen />} />
             </Routes>
-
         </div>
       </BrowserRouter>
     </>
