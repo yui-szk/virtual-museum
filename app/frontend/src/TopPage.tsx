@@ -1,17 +1,9 @@
 import React from 'react';
 
-// ドアが押された時の動作を定義する関数
+//* ドアが押された時の動作を定義する関数
+//! 今回はアラート表示のみ、あとで部屋への移動に変更
 const handleDoorClick = (doorName: string) => {
   alert(`${doorName}が押されました！`);
-};
-
-// ランダムな16進数の色コードを生成するヘルパー関数
-const getRandomColor = () => {
-  // 明るすぎず、暗すぎない色を生成するため、000000からFFFFFFまでをランダムに選ぶ
-  // 今回は、画像の雰囲気に合わせて特定のパレットを使うため、この関数は使用せず、既存の色を使うか、
-  // 後述のようにドアのnameを表示するために、ドアのデータを変更します。
-  // 画像通りの色を再現するため、この関数は使いません。
-  return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 };
 
 // ドアの情報を定義する型
@@ -40,9 +32,7 @@ const doorsData: Door[] = [
   { id: 10, user_id: 209, name: '静寂の展示室', color: '#4682b4', isMine: false }, // 青
 ];
 
-/**
- * アプリケーションのトップページ（ドアの選択画面）コンポーネント。
- */
+//*アプリケーションのトップページ（ドアの選択画面）コンポーネント。
 export default function TopPage() {
   return (
     <div className="container" style={{ textAlign: 'center', padding: '50px' }}>
@@ -74,9 +64,7 @@ interface DoorProps {
   onClick: (doorName: string) => void;
 }
 
-/**
- * 個々のドアを表すコンポーネント。（最初の画像デザインに戻す）
- */
+//*個々のドアを表すコンポーネント。（最初の画像デザインに戻す）
 const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
   return (
     <div
@@ -91,7 +79,7 @@ const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
         transition: 'transform 0.1s ease-in-out',
         userSelect: 'none',
         
-        // 最初の画像の雰囲気を再現
+        // 雰囲気
         border: '1px solid #ccc', // 細い枠線
         borderRadius: '3px',
         boxShadow: '2px 2px 5px rgba(0,0,0,0.1)', // 控えめなシャドウ
@@ -102,7 +90,7 @@ const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
         overflow: 'hidden',
       }}
     >
-      {/* ドアハンドル（丸みを帯びた形状に戻す） */}
+      {/* ドアハンドル（丸みを帯びた形状） */}
       <div style={{
         position: 'absolute',
         right: '15px',
@@ -115,7 +103,7 @@ const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
         border: '1px solid #777',
       }} />
 
-      {/* ドア名を表示 (自分の部屋かどうかにかかわらず、nameを表示) */}
+      {/* ドア名を表示 (nameを表示) */}
       <div style={{ 
         position: 'absolute',
         top: door.isMine ? '5px' : 'auto', // 自分の部屋は上部
