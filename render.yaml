@@ -1,18 +1,11 @@
 services:
-  # ================
-  # Backend (Go + Docker)
-  # ================
   - type: web
     name: backend
     runtime: docker
     dockerfilePath: app/backend/Dockerfile
     plan: free
-    healthCheckPath: /healthz
-    autoDeploy: true
+    # 必要に応じて追加: healthCheckPath: /healthz
     envVars:
-      - key: PORT
-        value: "8080"
-      # DBを使うなら以下
       - key: DB_HOST
         value: mysql
       - key: DB_PORT
@@ -24,14 +17,10 @@ services:
       - key: DB_NAME
         value: appdb
 
-  # ================
-  # Frontend (Vite → Static)
-  # ================
   - type: web
     name: frontend
     runtime: static
     plan: free
-    autoDeploy: true
     buildCommand: |
       cd app/frontend
       npm ci
@@ -43,18 +32,18 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://backend.onrender.com  # デプロイ後に実URLへ更新
+        value: https://backend.onrender.com
 
-  # ================
-  # MySQL (Private Service)
-  # ================
   - type: pserv
     name: mysql
     runtime: docker
     plan: starter
-    autoDeploy: true
     image:
-      url: docker.io/mysql:8.4   # ← 文字列ではなくオブジェクトで指定
+      url: docker.io/mysql:8.4
+    disk:
+      name: mysqldata
+      mountPath: /var/lib/mysql
+      sizeGB: 10
     envVars:
       - key: MYSQL_DATABASE
         value: appdb
@@ -64,9 +53,3 @@ services:
         generateValue: true
       - key: MYSQL_ROOT_PASSWORD
         generateValue: true
-      - key: PORT
-        value: "3306"
-    disk:
-      name: mysqldata
-      mountPath: /var/lib/mysql
-      sizeGB: 10
