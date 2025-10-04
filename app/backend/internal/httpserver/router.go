@@ -4,6 +4,8 @@ import (
     "encoding/json"
     "log/slog"
     "net/http"
+    "strconv"
+    "fmt"
 
     "github.com/go-chi/chi/v5"
     "github.com/go-chi/cors"
@@ -14,8 +16,14 @@ import (
 )
 
 // NewRouter configures chi router, CORS, and registers routes.
-func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService) http.Handler {
+func NewRouter(cfg config.Config, log *slog.Logger, metSvc *service.MetService) http.Handler {
     r := chi.NewRouter()
+
+	// ---- Middlewares
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(5 * time.Second))
 
     // CORS
     r.Use(cors.Handler(cors.Options{
@@ -35,21 +43,8 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
 
     // API routes
     r.Route("/api/v1", func(api chi.Router) {
-        // GET /items -> list
-        api.Get("/items", func(w http.ResponseWriter, r *http.Request) {
-            items, err := itemSvc.List()
-            if err != nil {
-                respondError(w, http.StatusInternalServerError, "failed to list items")
-                log.Error("list items failed", slog.String("error", err.Error()))
-                return
-            }
-            respondJSON(w, http.StatusOK, items)
-        })
-
-        // POST /items -> create with basic validation
-        type createReq struct {
-            Name string `json:"name"`
-        }
+        // Handlers
+        metHandler := handlers.NewMetHandler(log, metSvc)
 
         api.Post("/items", func(w http.ResponseWriter, r *http.Request) {
             var req createReq
@@ -70,7 +65,7 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
         metHandler := handlers.NewMetHandler(log, metSvc)
 
         // idから絵画情報取得
-        api.Get("/met/objects/{id}", metHandler.GetObjectByID)
+        api.Get("/met/objects/{id}",　metHandler.GetObjectByID)
     })
 
     return r
