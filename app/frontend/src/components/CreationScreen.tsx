@@ -130,9 +130,18 @@ export default function CreationPage() {
                 <MuseumPicture />
               </div>
             </div>
+            {/* 修正: Bottom Controls - タイトル入力欄、「戻る」「完了」ボタンを配置 */}
+            <div className="flex justify-between items-end w-full max-w-xl mt-4 mb-4">
+              
+              {/* 1. 左下に「戻る」ボタンを配置 */}
+              <button 
+                className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow"
+                // onClick={handleBack} //!戻る処理の記述
+              >
+                戻る
+              </button>
 
-            {/* Bottom Controls - タイトル入力欄 */}
-            <div className="flex justify-center items-center gap-8 mt-4 mb-4">
+              {/* 2. 中央にタイトル入力欄を配置 */}
               <div className="p-2 bg-white rounded-md shadow flex items-center gap-2">
                 <input
                   type="text"
@@ -145,7 +154,7 @@ export default function CreationPage() {
                 {/* 編集/保存ボタン */}
                 <button
                   className="p-1 rounded font-bold text-gray-800"
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => setIsEditing(!isEditing)} //! 編集
                 >
                   <IconContext.Provider value={{ size: '1.5em' }}>
                     {isEditing ? (
@@ -156,6 +165,14 @@ export default function CreationPage() {
                   </IconContext.Provider>
                 </button>
               </div>
+
+              {/* 3. 右下に「完了」ボタンを配置 */}
+              <button 
+                className="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 transition shadow"
+                // onClick={handleComplete} 完了処理を実装する場合はここに
+              >
+                完了
+              </button>
             </div>
           </div>
         </div>
