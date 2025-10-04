@@ -6,7 +6,10 @@ const handleDoorClick = (doorName: string) => {
   alert(`${doorName}が押されました！`);
 };
 
+// TODO: userIdが自分の場合はisMineをtrueにする処理の追加
+
 // ドアの情報を定義する型
+// TODO: テーブルからの取得にはcolorとinMineは不要
 interface Door {
   id: number;
   user_id: number; // Museumテーブルに合わせて追加
@@ -16,6 +19,7 @@ interface Door {
 }
 
 // ドアのデータ配列 (user_idと美術館のnameを模した値を設定)
+// HACK: 本来はサーバーから取得するが、今回は静的データで代用
 const doorsData: Door[] = [
   // 自分の部屋
   { id: 1, user_id: 100, name: '自分の部屋', color: '#ffc107', isMine: true }, // 黄色
@@ -64,6 +68,7 @@ interface DoorProps {
   onClick: (doorName: string) => void;
 }
 
+// HACK: styleをTailwind CSSに変換する
 //*個々のドアを表すコンポーネント。（最初の画像デザインに戻す）
 const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
   return (
