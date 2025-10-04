@@ -14,7 +14,7 @@ import (
 )
 
 // NewRouter configures chi router, CORS, and registers routes.
-func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService) http.Handler {
+func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService, museumSvc *service.MuseumService) http.Handler {
     r := chi.NewRouter()
 
     // CORS
@@ -71,6 +71,13 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
 
         // idから絵画情報取得
         api.Get("/met/objects/{id}", metHandler.GetObjectByID)
+
+        // Museum API handler
+        museumHandler := handlers.NewMuseumHandler(log, museumSvc)
+
+        // Museum endpoints
+        api.Get("/museum", museumHandler.Get)
+        api.Post("/museum/{id}/title", museumHandler.UpdateTitle)
     })
 
     return r
