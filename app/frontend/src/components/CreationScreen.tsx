@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 // アイコンとコンテキストをインポート
 import { IconContext } from 'react-icons'
 import { MdOutlineEdit, MdOutlineCheck } from "react-icons/md";
-// ギャラリーの画像コンポーネントをインポート
-import MuseumPicture from './MuseumPicture';
 
 // 画像をJavaScriptモジュールとしてインポートする
 //! 本当は背景画像のURLを取得する必要あり 
@@ -114,8 +112,6 @@ export default function CreationPage() {
         <div className="flex-1 flex flex-col items-center p-0 relative overflow-y-auto bg-gray-200">
 
           {/* Gallery View - 画像コンテナ */}
-          <div className="w-full max-w-6xl flex flex-col justify-center items-center relative my-4">
-            {/* 背景画像と MuseumPicture を重ねるコンテナ */}
             <div className="relative w-full overflow-hidden flex justify-center items-center aspect-video">
 
               {/* 中央の背景画像 */}
@@ -124,13 +120,8 @@ export default function CreationPage() {
                 alt="Museum Background"
                 className="w-full h-full object-contain"
               />
-
-              {/* Gallery Wall with Frames / MuseumPicture の部分 - 画像に重ねて表示 */}
-              <div className="absolute inset-0">
-                <MuseumPicture />
-              </div>
             </div>
-            {/* 修正: Bottom Controls - タイトル入力欄、「戻る」「完了」ボタンを配置 */}
+            {/* Bottom Controls - タイトル入力欄、「戻る」「完了」ボタンを配置 */}
             <div className="flex justify-between items-end w-full max-w-xl mt-4 mb-4">
               
               {/* 1. 左下に「戻る」ボタンを配置 */}
@@ -173,7 +164,6 @@ export default function CreationPage() {
               >
                 完了
               </button>
-            </div>
           </div>
         </div>
 
