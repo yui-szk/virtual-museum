@@ -1,19 +1,18 @@
 services:
-  # =========================
+  # ================
   # Backend (Go + Docker)
-  # =========================
+  # ================
   - type: web
     name: backend
     runtime: docker
     dockerfilePath: app/backend/Dockerfile
-    # 任意: リポジトリ直下が root。サブディレクトリでビルド文脈を変えたい場合は rootDir も検討
-    # rootDir: app/backend
     plan: free
     healthCheckPath: /healthz
+    autoDeployTrigger: commit
     envVars:
       - key: PORT
         value: "8080"
-      # DB を使うなら（下の mysql サービスと合わせる）
+      # DBを使うなら以下追加
       - key: DB_HOST
         value: mysql
       - key: DB_PORT
@@ -25,34 +24,36 @@ services:
       - key: DB_NAME
         value: appdb
 
-  # =========================
-  # Frontend (Vite を Static Site としてCDN配信)
-  # =========================
+  # ================
+  # Frontend (Static site via Vite build)
+  # ================
   - type: web
     name: frontend
     runtime: static
+    plan: free
+    autoDeployTrigger: commit
     buildCommand: |
       cd app/frontend
       npm ci
       npm run build
     staticPublishPath: app/frontend/dist
-    plan: free
     routes:
       - type: rewrite
         source: /**/*
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://backend.onrender.com  # 初回デプロイ後に実URLへ更新
+        value: https://backend.onrender.com  # ← デプロイ後に backend 実URLに書き換え
 
-  # =========================
-  # (任意) MySQL as Private Service
-  # =========================
-  - type: pserv          # ← private ではなく pserv
+  # ================
+  # (任意) MySQL as internal service
+  # ================
+  - type: pserv
     name: mysql
     runtime: docker
+    plan: starter
+    autoDeployTrigger: commit
     image: docker.io/mysql:8.4
-    plan: starter        # ← private service は free プラン不可
     envVars:
       - key: MYSQL_DATABASE
         value: appdb
