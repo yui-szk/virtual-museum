@@ -51,10 +51,27 @@ const doorsData: Door[] = [
 
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント
 export default function TopPage() {
-    // 新規作成ボタンが押された時の動作
-    const handleNewCreationClick = () => {
-        handleNavigate('/create/new'); //HACK: 仮のパス
-    };
+  const [doorsData, setDoorsData] = useState<Door[]>([])
+
+  useEffect(() => {
+    const loadContents = async () => {
+      const contents = await fetchMuseumItems(1) // HACK: 仮のユーザーID
+      // 取得したデータにランダムな色を追加
+      const doorsWithColors = contents.map((item) => ({
+        id: item.id,
+        user_id: 1, // HACK: 仮のユーザーID
+        name: item.name,
+        color: getRandomColor(),
+      }))
+      setDoorsData(doorsWithColors)
+    }
+    loadContents()
+  }, [])
+
+  // 新規作成ボタンが押された時の動作
+  const handleNewCreationClick = () => {
+    handleNavigate('/create/new') //HACK: 仮のパス
+  }
 
     // 自分の部屋一覧ボタンが押された時の動作
     const handleMyRoomsClick = () => {
