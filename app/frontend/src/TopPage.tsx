@@ -17,23 +17,37 @@ interface Door {
   color: string; // ドアの色
   isMine: boolean;
 }
+//* ドアの色作成する関数
+const getRandomColor = (): string => {
+  // 色相 (Hue): 0から360度まで完全にランダム
+  const h = Math.floor(Math.random() * 360);
+  
+  // 彩度 (Saturation): 60%から80%の間でランダム (色が淡くなりすぎないように制御)
+  const s = Math.floor(Math.random() * 20) + 60; 
+  
+  // 明度 (Lightness): 70の10前後の間でランダム (明るく柔らかい色に固定)
+  const l = Math.floor(Math.random() * 20) + 75; 
+  
+  // HSL文字列を返す
+  return `hsl(${h}, ${s}%, ${l}%)`;
+};
 
 // ドアのデータ配列 (user_idと美術館のnameを模した値を設定)
 // HACK: 本来はサーバーから取得するが、今回は静的データで代用
 const doorsData: Door[] = [
   // 自分の部屋
-  { id: 1, user_id: 100, name: '自分の部屋', color: '#ffc107', isMine: true }, // 黄色
+  { id: 1, user_id: 100, name: '自分の部屋', color: getRandomColor(), isMine: true }, 
   // 他の人の部屋 (美術館の名前を設定)
-  { id: 2, user_id: 201, name: '夕暮れの美術館', color: '#f5f5dc', isMine: false }, // 薄いベージュ
-  { id: 3, user_id: 202, name: '海の景色', color: '#4682b4', isMine: false }, // 青
-  { id: 4, user_id: 203, name: '未来派ギャラリー', color: '#4682b4', isMine: false }, // 青
-  { id: 5, user_id: 204, name: '光と影の部屋', color: '#ffc107', isMine: false }, // 黄色
+  { id: 2, user_id: 201, name: '夕暮れの美術館', color: getRandomColor(), isMine: false }, 
+  { id: 3, user_id: 202, name: '海の景色', color: getRandomColor(), isMine: false }, 
+  { id: 4, user_id: 203, name: '未来派ギャラリー', color: getRandomColor(), isMine: false }, 
+  { id: 5, user_id: 204, name: '光と影の部屋', color: getRandomColor(), isMine: false }, 
   
-  { id: 6, user_id: 205, name: '深淵の青', color: '#4682b4', isMine: false }, // 青
-  { id: 7, user_id: 206, name: '黄金の肖像画', color: '#ffc107', isMine: false }, // 黄色
-  { id: 8, user_id: 207, name: '情熱のキャンバス', color: '#dc3545', isMine: false }, // 赤
-  { id: 9, user_id: 208, name: '太陽のホール', color: '#ffc107', isMine: false }, // 黄色
-  { id: 10, user_id: 209, name: '静寂の展示室', color: '#4682b4', isMine: false }, // 青
+  { id: 6, user_id: 205, name: '深淵の青', color: getRandomColor(), isMine: false }, 
+  { id: 7, user_id: 206, name: '黄金の肖像画', color: getRandomColor(), isMine: false }, 
+  { id: 8, user_id: 207, name: '情熱のキャンバス', color: getRandomColor(), isMine: false }, 
+  { id: 9, user_id: 208, name: '太陽のホール', color: getRandomColor(), isMine: false }, 
+  { id: 10, user_id: 209, name: '静寂の展示室', color: getRandomColor(), isMine: false }, 
 ];
 
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント。
@@ -61,76 +75,85 @@ export default function TopPage() {
   );
 }
 
-
+//?-------------------------------------------------------------
 // ドアコンポーネントのProps型
 interface DoorProps {
   door: Door;
   onClick: (doorName: string) => void;
 }
 
-// HACK: styleをTailwind CSSに変換する
-//*個々のドアを表すコンポーネント。（最初の画像デザインに戻す）
+// ドアコンポーネント（Tailwind CSS 版）
 const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
   return (
     <div
       onClick={() => onClick(door.name)}
-      style={{
-        // ドア本体のスタイル
-        backgroundColor: door.color,
-        height: '180px', 
-        width: '100%',
-        cursor: 'pointer',
-        position: 'relative',
-        transition: 'transform 0.1s ease-in-out',
-        userSelect: 'none',
+      className={`
+        relative 
+        w-full 
+        h-[250px] 
+        cursor-pointer 
+        select-none
+        transition-transform 
+        duration-100 
+        ease-in-out 
+        rounded-sm 
         
-        // 雰囲気
-        border: '1px solid #ccc', // 細い枠線
-        borderRadius: '3px',
-        boxShadow: '2px 2px 5px rgba(0,0,0,0.1)', // 控えめなシャドウ
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        overflow: 'hidden',
-      }}
+        /* ドアのまわりに黒い縁 (border-2 border-black) */
+        border-8 border-gray-800
+        
+        shadow-md 
+        flex flex-col items-center justify-start 
+        overflow-hidden 
+        hover:scale-[1.03]
+      `}
+      style={{ backgroundColor: door.color }}
     >
-      {/* ドアハンドル（丸みを帯びた形状） */}
-      <div style={{
-        position: 'absolute',
-        right: '15px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        width: '8px', // 幅を細く
-        height: '25px', // 高さを短く
-        backgroundColor: '#ccc',
-        borderRadius: '3px',
-        border: '1px solid #777',
-      }} />
+      {/* 内側の段差パネル（画像のような枠） */}
+      <div
+        className="
+          absolute top-4 left-4 right-4 bottom-4 
+          
+          // 中の線
+          border-2 border-gray-800
+          
+          shadow-inner
+        "
+      />
 
-      {/* ドア名を表示 (nameを表示) */}
-      <div style={{ 
-        position: 'absolute',
-        top: door.isMine ? '5px' : 'auto', // 自分の部屋は上部
-        bottom: door.isMine ? 'auto' : '5px', // 他の部屋は下部
-        left: door.isMine ? '5px' : '50%', // 自分の部屋は左寄せ
-        transform: door.isMine ? 'none' : 'translateX(-50%)', // 他の部屋は中央揃え
-        
-        backgroundColor: door.isMine ? '#f7f7f7' : 'rgba(0, 0, 0, 0.6)', // 自分の部屋は明るい、他は暗い背景
-        color: door.isMine ? '#333' : 'white', // 自分の部屋は濃い、他は白い文字
-        padding: '3px 6px',
-        borderRadius: '3px',
-        fontSize: door.isMine ? '14px' : '10px',
-        fontWeight: door.isMine ? 'bold' : 'normal',
-        textAlign: 'center',
-        maxWidth: '90%',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-      }}>
+      {/* ドアハンドル（丸い・右側） */}
+      <div
+        className="
+          absolute right-[12px] top-1/2 
+          -translate-y-1/2 
+          
+          /* ドアノブを丸くするためにサイズを調整 (w-4 h-4は正方形) */
+          w-4 h-4 
+          
+          /* 変更3: ドアノブはグレーで固定、円のように丸くする */
+          bg-gray-300 
+          border border-gray-700 
+          rounded-full
+        "
+      />
+
+      {/* ドア名ラベル */}
+      <div
+        className={`
+          absolute 
+          px-[6px] py-[3px] 
+          rounded 
+          max-w-[90%] 
+          text-ellipsis overflow-hidden whitespace-nowrap 
+          text-center
+          ${
+            door.isMine
+              ? "top-[5px] left-[5px] bg-gray-100 text-gray-800 text-[14px] font-bold"
+              : "bottom-[5px] left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px]"
+          }
+        `}
+      >
         {door.name}
       </div>
-
     </div>
   );
 };
