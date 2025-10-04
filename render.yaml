@@ -1,18 +1,19 @@
 services:
   # =========================
-  # Backend (Docker)
+  # Backend (Go + Docker)
   # =========================
   - type: web
-    runtime: docker
     name: backend
+    runtime: docker
     dockerfilePath: app/backend/Dockerfile
+    # 任意: リポジトリ直下が root。サブディレクトリでビルド文脈を変えたい場合は rootDir も検討
+    # rootDir: app/backend
     plan: free
-    autoDeployTrigger: commit
     healthCheckPath: /healthz
     envVars:
       - key: PORT
         value: "8080"
-      # DB接続例（pserv名= mysql を内部ホストとして使える）
+      # DB を使うなら（下の mysql サービスと合わせる）
       - key: DB_HOST
         value: mysql
       - key: DB_PORT
@@ -25,35 +26,33 @@ services:
         value: appdb
 
   # =========================
-  # Frontend (Static Site)
+  # Frontend (Vite を Static Site としてCDN配信)
   # =========================
-  - type: web          # ← static ではなく web
-    runtime: static    # ← 静的サイトは runtime: static
+  - type: web
     name: frontend
+    runtime: static
     buildCommand: |
       cd app/frontend
       npm ci
       npm run build
     staticPublishPath: app/frontend/dist
     plan: free
-    autoDeployTrigger: commit
     routes:
       - type: rewrite
         source: /**/*
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://backend.onrender.com   # ← 初回後に実URLへ差し替え
+        value: https://backend.onrender.com  # 初回デプロイ後に実URLへ更新
 
   # =========================
-  # MySQL (Private Service)  ← ここが修正ポイント
+  # (任意) MySQL as Private Service
   # =========================
-  - type: pserv        # ← private ではなく pserv
-    runtime: docker
+  - type: pserv          # ← private ではなく pserv
     name: mysql
+    runtime: docker
     image: docker.io/mysql:8.4
-    plan: starter
-    autoDeployTrigger: commit
+    plan: starter        # ← private service は free プラン不可
     envVars:
       - key: MYSQL_DATABASE
         value: appdb
@@ -63,6 +62,8 @@ services:
         generateValue: true
       - key: MYSQL_ROOT_PASSWORD
         generateValue: true
+      - key: PORT
+        value: "3306"
     disk:
       name: mysqldata
       mountPath: /var/lib/mysql
