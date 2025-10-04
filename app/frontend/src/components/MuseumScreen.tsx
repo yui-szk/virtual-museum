@@ -21,14 +21,7 @@ const MuseumScreen = () => {
           </div>
 
           {/* Bottom Controls */}
-          <div className="flex justify-between items-center gap-8 mt-4">
-            <a 
-              href="/create/new"
-              className="px-4 py-5 w-40 bg-gray-200 hover:bg-gray-300 transition-colors rounded-lg shadow-md flex items-center justify-center"
-            >
-              <div className="text-gray-800 font-bold text-xl">新規作成</div>
-            </a>
-
+          <div className="flex justify-center items-center gap-8 mt-4">
             <div className="p-4 bg-white rounded-lg shadow-md flex items-center gap-4">
               <input
               type="text"
@@ -51,13 +44,6 @@ const MuseumScreen = () => {
               </IconContext.Provider>
               </button>
             </div>
-
-            <a 
-              href="/create"
-              className="px-4 py-5 w-40 bg-gray-200 hover:bg-gray-300 transition-colors rounded-lg shadow-md flex items-center justify-center"
-            >
-              <div className="text-gray-800 font-bold text-xl">編集</div>
-            </a>
           </div>
         </div>
       </div>
