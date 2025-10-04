@@ -7,8 +7,8 @@ const handleNavigate = (path: string) => {
 
 //* ドアが押された時の動作を定義する関数
 //! 今回はアラート表示のみ、あとで部屋への移動に変更
-const handleDoorClick = (doorName: string) => {
-  alert(`${doorName}が押されました！`);
+const handleDoorClick = (doorId: number) => {
+  handleNavigate(`/museum/${doorId}`);
 };
 
 // ドアの情報を定義する型
@@ -53,14 +53,12 @@ const doorsData: Door[] = [
 export default function TopPage() {
     // 新規作成ボタンが押された時の動作
     const handleNewCreationClick = () => {
-        // '新規作成'用のCreationPageに遷移させるパスを設定
         handleNavigate('/create/new'); //HACK: 仮のパス
     };
 
     // 自分の部屋一覧ボタンが押された時の動作
     const handleMyRoomsClick = () => {
-        // 自分の部屋一覧ページに遷移させるパスを設定
-        handleNavigate('/show'); //HACK: 仮のパス
+        handleNavigate('/show');
     };
 
 
@@ -82,7 +80,7 @@ export default function TopPage() {
         </div>
       <div className="grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto my-10">
         {doorsData.map((door) => (
-          <DoorComponent key={door.id} door={door} onClick={handleDoorClick} />
+          <DoorComponent key={door.id} door={door} onClick={() => handleDoorClick(door.id)} />
         ))}
       </div>
     </div>
@@ -93,7 +91,7 @@ export default function TopPage() {
 // ドアコンポーネントのProps型
 interface DoorProps {
   door: Door;
-  onClick: (doorName: string) => void;
+  onClick: (doorId: number) => void;
 }
 
 // ドアコンポーネント（Tailwind CSS 版）
