@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import React from 'react';
+import TopPage from './TopPage'; 
 
 export default function App() {
-
   return (
-    <div>
-      <h1>Items</h1>
-    </div>
-  )
+    // 初期でTopPageコンポーネントを表示
+    <TopPage />
+  );
 }
-
