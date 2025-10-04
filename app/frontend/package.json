@@ -12,8 +12,10 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.14",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -33,4 +35,3 @@
     "vitest": "^1.6.0"
   }
 }
-
