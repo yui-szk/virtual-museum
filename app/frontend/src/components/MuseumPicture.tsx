@@ -1,12 +1,14 @@
-import museumRoom from "../assets/museum-sample.jpg"
+interface MuseumPictureProps {
+  imageUrl: string;
+}
 
-const MuseumPicture = () => {
+const MuseumPicture = ({ imageUrl }: MuseumPictureProps) => {
   return (
-    <div className="w-full h-full overflow-hidden">
+    <div className="w-full h-full overflow-hidden flex items-center justify-center">
       <img
-        src={museumRoom}
+        src={imageUrl}
         alt="Museum Room"
-        className="w-full h-full object-cover min-w-4xl"
+        className="h-full w-auto object-contain"
       />
     </div>
   );
