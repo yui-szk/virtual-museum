@@ -103,9 +103,31 @@ export default function CreationPage() {
       </header>
 
       {/* メインレイアウト */}
-      <main className="flex flex-1 overflow-hidden">
-        {/* 左サイドバー */}
-        <LeftSidebar backgrounds={dummyBackgrounds} onBackgroundSelect={handleBackgroundChange} />
+      <div className="flex flex-1 overflow-hidden">
+        {isLeftSidebarOpen && (
+          <div className="relative w-64 bg-white border-r border-gray-200 flex-shrink-0 shadow-sm transition-all duration-300 z-20">
+            <button
+              className="absolute top-4 right-0 translate-x-full bg-white hover:bg-gray-50 rounded-r-lg px-2 py-3 text-gray-600 hover:text-gray-900 border border-l-0 border-gray-200 transition-all duration-200 z-10"
+              onClick={() => setIsLeftSidebarOpen(false)}
+            >
+              <MdArrowBackIos />
+            </button>
+
+            <LeftSidebar
+              backgrounds={dummyBackgrounds}
+              onBackgroundSelect={handleBackgroundChange}
+            />
+          </div>
+        )}
+
+        {!isLeftSidebarOpen && (
+          <button
+            className="absolute top-16 left-0 bg-white hover:bg-gray-50 rounded-r-lg px-2 py-3 text-gray-600 hover:text-gray-900 shadow-md border border-l-0 border-gray-200 transition-all duration-200 z-30"
+            onClick={() => setIsLeftSidebarOpen(true)}
+          >
+            <MdArrowForwardIos />
+          </button>
+        )}
 
         {/* 中央 */}
         <div className="flex-1 flex flex-col items-center p-3 relative overflow-y-auto bg-gray-200">
