@@ -97,62 +97,18 @@ interface DoorProps {
 const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
   return (
     <div
-      onClick={() => onClick(door.name)}
-      className={`
-        relative 
-        w-full 
-        h-[250px] 
-        cursor-pointer 
-        select-none
-        transition-transform 
-        duration-100 
-        ease-in-out 
-        rounded-sm
-        border-8 border-gray-800
-        shadow-md 
-        flex flex-col items-center justify-start 
-        overflow-hidden 
-        hover:scale-[1.03]
-      `}
+      onClick={() => onClick(door.id)}
+      className="relative w-full h-[250px] cursor-pointer select-none transition-transform duration-100 ease-in-out rounded-sm border-8 border-gray-800 shadow-md flex flex-col items-center justify-start overflow-hidden hover:scale-[1.03]"
       style={{ backgroundColor: door.color }}
     >
       {/* 内側の段差パネル（画像のような枠） */}
-      <div
-        className="
-          absolute top-4 left-4 right-4 bottom-4 
-          border-2 border-gray-800
-          shadow-inner
-        "
-      />
+      <div className="absolute top-4 left-4 right-4 bottom-4 border-2 border-gray-800 shadow-inner"/>
 
       {/* ドアハンドル（丸い・右側） */}
-      <div
-        className="
-          absolute right-[12px] top-1/2 
-          -translate-y-1/2 
-          w-4 h-4 
-          bg-gray-300 
-          border border-gray-700 
-          rounded-full
-        "
-      />
+      <div className="absolute right-[12px] top-1/2 -translate-y-1/2 w-4 h-4 bg-gray-300 border border-gray-700 rounded-full"/>
 
       {/* ドア名ラベル */}
-      <div
-        className={`
-          absolute 
-          px-[6px] py-[3px] 
-          rounded 
-          max-w-[90%] 
-          text-ellipsis overflow-hidden whitespace-nowrap 
-          text-center
-          ${
-            door.isMine
-              ? "top-[5px] left-[5px] bg-gray-100 text-gray-800 text-[14px] font-bold"
-              : "bottom-[5px] left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px]"
-          }
-        `}
-      >
+      <div className="absolute px-[6px] py-[3px] rounded max-w-[90%] text-ellipsis overflow-hidden whitespace-nowrap text-center bottom-[5px] left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px]">
         {door.name}
       </div>
     </div>
