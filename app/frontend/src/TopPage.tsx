@@ -75,76 +75,85 @@ export default function TopPage() {
   );
 }
 
-
+//?-------------------------------------------------------------
 // ドアコンポーネントのProps型
 interface DoorProps {
   door: Door;
   onClick: (doorName: string) => void;
 }
 
-// HACK: styleをTailwind CSSに変換する
-//*個々のドアを表すコンポーネント。（最初の画像デザインに戻す）
+// ドアコンポーネント（Tailwind CSS 版）
 const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
   return (
     <div
       onClick={() => onClick(door.name)}
-      style={{
-        // ドア本体のスタイル
-        backgroundColor: door.color,
-        height: '180px', 
-        width: '100%',
-        cursor: 'pointer',
-        position: 'relative',
-        transition: 'transform 0.1s ease-in-out',
-        userSelect: 'none',
+      className={`
+        relative 
+        w-full 
+        h-[250px] 
+        cursor-pointer 
+        select-none
+        transition-transform 
+        duration-100 
+        ease-in-out 
+        rounded-sm 
         
-        // 雰囲気
-        border: '1px solid #ccc', // 細い枠線
-        borderRadius: '3px',
-        boxShadow: '2px 2px 5px rgba(0,0,0,0.1)', // 控えめなシャドウ
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        overflow: 'hidden',
-      }}
+        /* ドアのまわりに黒い縁 (border-2 border-black) */
+        border-8 border-gray-800
+        
+        shadow-md 
+        flex flex-col items-center justify-start 
+        overflow-hidden 
+        hover:scale-[1.03]
+      `}
+      style={{ backgroundColor: door.color }}
     >
-      {/* ドアハンドル（丸みを帯びた形状） */}
-      <div style={{
-        position: 'absolute',
-        right: '15px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        width: '8px', // 幅を細く
-        height: '25px', // 高さを短く
-        backgroundColor: '#ccc',
-        borderRadius: '3px',
-        border: '1px solid #777',
-      }} />
+      {/* 内側の段差パネル（画像のような枠） */}
+      <div
+        className="
+          absolute top-4 left-4 right-4 bottom-4 
+          
+          // 中の線
+          border-2 border-gray-800
+          
+          shadow-inner
+        "
+      />
 
-      {/* ドア名を表示 (nameを表示) */}
-      <div style={{ 
-        position: 'absolute',
-        top: door.isMine ? '5px' : 'auto', // 自分の部屋は上部
-        bottom: door.isMine ? 'auto' : '5px', // 他の部屋は下部
-        left: door.isMine ? '5px' : '50%', // 自分の部屋は左寄せ
-        transform: door.isMine ? 'none' : 'translateX(-50%)', // 他の部屋は中央揃え
-        
-        backgroundColor: door.isMine ? '#f7f7f7' : 'rgba(0, 0, 0, 0.6)', // 自分の部屋は明るい、他は暗い背景
-        color: door.isMine ? '#333' : 'white', // 自分の部屋は濃い、他は白い文字
-        padding: '3px 6px',
-        borderRadius: '3px',
-        fontSize: door.isMine ? '14px' : '10px',
-        fontWeight: door.isMine ? 'bold' : 'normal',
-        textAlign: 'center',
-        maxWidth: '90%',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-      }}>
+      {/* ドアハンドル（丸い・右側） */}
+      <div
+        className="
+          absolute right-[12px] top-1/2 
+          -translate-y-1/2 
+          
+          /* ドアノブを丸くするためにサイズを調整 (w-4 h-4は正方形) */
+          w-4 h-4 
+          
+          /* 変更3: ドアノブはグレーで固定、円のように丸くする */
+          bg-gray-300 
+          border border-gray-700 
+          rounded-full
+        "
+      />
+
+      {/* ドア名ラベル */}
+      <div
+        className={`
+          absolute 
+          px-[6px] py-[3px] 
+          rounded 
+          max-w-[90%] 
+          text-ellipsis overflow-hidden whitespace-nowrap 
+          text-center
+          ${
+            door.isMine
+              ? "top-[5px] left-[5px] bg-gray-100 text-gray-800 text-[14px] font-bold"
+              : "bottom-[5px] left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px]"
+          }
+        `}
+      >
         {door.name}
       </div>
-
     </div>
   );
 };
