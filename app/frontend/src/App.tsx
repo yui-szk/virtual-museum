@@ -11,7 +11,7 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
-        <div className="bg-gradient-to-b overflow-y-hidden from-gray-50 to-gray-100 flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-b overflow-y-hidden from-gray-50 to-gray-100 flex flex-col items-center justify-center">
             <Routes>
             <Route path="/" element={<TopPage />} />
 
