@@ -24,6 +24,9 @@ interface LeftSidebarProps {
   onBackgroundSelect: (url: string) => void;
 }
 
+
+
+
 const dummyArtworks: Artwork[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   url: `https://placehold.co/100x100/F0F0F0/000000?text=作品+${i+1}`,
@@ -102,53 +105,53 @@ export default function CreationPage() {
             />
 
             {/* 配置スロット (A, B, C) - Adjusted for image alignment */}
-    <div className="absolute inset-0"> {/* Use inset-0 to cover the whole image area */}
-        {/* Slot A: Positioned over the left inner artwork */}
-        <div
-            onClick={() => handlePlaceArtwork("A")}
-            className="absolute top-[15%] left-[17%] w-[20%] h-[40%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
-            style={{
-                // More precise positioning relative to the left artwork
-                width: '7%', 
-                height: '17%', 
-                top: '51%', 
-                left: '31%' 
-            }}
-        >
-            {placements["A"] ?? "A"}
-        </div>
+                <div className="absolute inset-0"> {/* Use inset-0 to cover the whole image area */}
+                    {/* Slot A: Positioned over the left inner artwork */}
+                    <div
+                        onClick={() => handlePlaceArtwork("A")}
+                        className="absolute top-[15%] left-[17%] w-[20%] h-[40%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
+                        style={{
+                            // More precise positioning relative to the left artwork
+                            width: '7%', 
+                            height: '17%', 
+                            top: '51%', 
+                            left: '31%' 
+                        }}
+                    >
+                        {placements["A"] ?? "A"}
+                    </div>
 
-        {/* Slot B: Positioned over the center largest artwork */}
-        <div
-            onClick={() => handlePlaceArtwork("B")}
-            className="absolute top-[10%] left-[40%] w-[25%] h-[50%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
-            style={{
-                // More precise positioning relative to the center artwork
-                width: '12%', 
-                height: '20%', 
-                top: '49%', 
-                left: '42%' 
-            }}
-        >
-            {placements["B"] ?? "B"}
-        </div>
+                    {/* Slot B: Positioned over the center largest artwork */}
+                    <div
+                        onClick={() => handlePlaceArtwork("B")}
+                        className="absolute top-[10%] left-[40%] w-[25%] h-[50%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
+                        style={{
+                            // More precise positioning relative to the center artwork
+                            width: '12%', 
+                            height: '20%', 
+                            top: '49%', 
+                            left: '42%' 
+                        }}
+                    >
+                        {placements["B"] ?? "B"}
+                    </div>
 
-        {/* Slot C: Positioned over the right inner artwork */}
-        <div
-            onClick={() => handlePlaceArtwork("C")}
-            className="absolute top-[15%] right-[10%] w-[25%] h-[40%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
-            style={{
-                // More precise positioning relative to the right artwork
-                width: '8%', 
-                height: '16%', 
-                top: '52%', 
-                right: '34.5%' 
-            }}
-        >
-            {placements["C"] ?? "C"}
-        </div>
-    </div>
-    </div>
+                    {/* Slot C: Positioned over the right inner artwork */}
+                    <div
+                        onClick={() => handlePlaceArtwork("C")}
+                        className="absolute top-[15%] right-[10%] w-[25%] h-[40%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
+                        style={{
+                            // More precise positioning relative to the right artwork
+                            width: '8%', 
+                            height: '16%', 
+                            top: '52%', 
+                            right: '34.5%' 
+                        }}
+                    >
+                        {placements["C"] ?? "C"}
+                    </div>
+                </div>
+            </div>
           {/* タイトル入力欄 */}
           <div className="flex justify-between items-end w-full max-w-xl mt-4 mb-4">
             <button className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow">
@@ -179,30 +182,35 @@ export default function CreationPage() {
         </div>
 
         {/* 右サイドバー */}
-        {isRightSidebarOpen && (
-          <div className="relative w-64 bg-gray-100 border-l border-gray-300 flex-shrink-0 transition-all duration-300">
-            {/* トグルボタン */}
-            <button
-              className="absolute top-2 left-0 -translate-x-full bg-gray-200 hover:bg-gray-300 rounded-r px-1 py-0.5 text-gray-700 shadow"
-              onClick={() => setIsRightSidebarOpen(false)}
-            >
-              ＞
-            </button>
+                {isRightSidebarOpen && (
+                    <div className="relative w-64 bg-gray-100 border-l border-gray-300 flex-shrink-0 transition-all duration-300">
+                        {/* トグルボタン */}
+                        <button
+                            className="absolute top-2 left-0 -translate-x-full bg-gray-200 hover:bg-gray-300 rounded-r px-1 py-0.5 text-gray-700 shadow"
+                            onClick={() => setIsRightSidebarOpen(false)}
+                        >
+                            ＞
+                        </button>
 
-            {/* 中身 */}
-            <RightSidebar artworks={dummyArtworks} onSelectArtwork={setSelectedArtworkId} />
-          </div>
-        )}
+                        {/* 中身 - selectedArtworkId を渡す */}
+                        <RightSidebar 
+                            artworks={dummyArtworks} 
+                            onSelectArtwork={setSelectedArtworkId} 
+                            selectedArtworkId={selectedArtworkId} // 選択状態を渡す
+                        />
+                    </div>
+                )}
 
-        {!isRightSidebarOpen && (
-          <button
-            className="absolute top-20 right-0 bg-gray-200 hover:bg-gray-300 rounded-l px-1 py-0.5 text-gray-700 shadow"
-            onClick={() => setIsRightSidebarOpen(true)}
-          >
-            ＜
-          </button>
-        )}
-      </main>
-    </div>
-  );
+                {/* ... (isRightSidebarOpen が false の場合のボタンは変更なし) ... */}
+                {!isRightSidebarOpen && (
+                    <button
+                        className="absolute top-20 right-0 bg-gray-200 hover:bg-gray-300 rounded-l px-1 py-0.5 text-gray-700 shadow"
+                        onClick={() => setIsRightSidebarOpen(true)}
+                    >
+                        ＜
+                    </button>
+                )}
+            </main>
+        </div>
+    );
 }
