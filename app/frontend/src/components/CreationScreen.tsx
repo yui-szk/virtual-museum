@@ -24,15 +24,27 @@ interface LeftSidebarProps {
   onBackgroundSelect: (url: string) => void;
 }
 
-
-
-
-const dummyArtworks: Artwork[] = Array.from({ length: 10 }, (_, i) => ({
+//?--------------------------------------------------------
+/*const dummyArtworks: Artwork[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   url: `https://placehold.co/100x100/F0F0F0/000000?text=作品+${i+1}`,
   name: `作品 ${i + 1}`,
-}));
+}));*/
+//?--------------------------------------------------------
+const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/original/DP800045.jpg';
 
+const dummyArtworks: Artwork[] = [
+    { id: 1, url: artworkImageUrl, name: '作品 1' },
+    { id: 2, url: artworkImageUrl, name: '作品 2' },
+    { id: 3, url: artworkImageUrl, name: '作品 3' },
+    // 残りの作品はプレースホルダーのまま
+    ...Array.from({ length: 7 }, (_, i) => ({
+        id: i + 4,
+        url: `https://placehold.co/100x100/F0F0F0/000000?text=作品+${i+4}`,
+        name: `作品 ${i + 4}`,
+    })),
+];
+// ... (dummyBackgrounds, LeftSidebar の定義はそのまま) ...
 const dummyBackgrounds: Background[] = [
   { id: 1, url: bgImageUrl, name: '背景1' },
   { id: 2, url: bgImageUrl, name: '背景2' },
