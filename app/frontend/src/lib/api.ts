@@ -39,3 +39,15 @@ export async function postItem(body: { name: string }) {
   return parsed.data
 }
 
+// [GET] /api/v1/museums?exclude_user_id=1
+export async function fetchMuseumItems(userId: number) {
+  const res = await fetch(`${base}/api/v1/museums?exclude_user_id=${userId}`)
+
+  if (!res.ok) throw new Error(`Failed to fetch museum items: ${res.status}`)
+  const json = await res.json()
+  const parsed = ItemsSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid museum items response: ${parsed.error.message}`)
+  }
+  return parsed.data
+}
