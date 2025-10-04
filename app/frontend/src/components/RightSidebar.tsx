@@ -9,6 +9,7 @@ interface Artwork {
 
 interface RightSidebarProps {
   artworks: Artwork[];
+  onSelectArtwork: (id: number) => void;
 }
 
 const RightSidebar: React.FC<RightSidebarProps> = ({ artworks }) => {
