@@ -1,4 +1,4 @@
-// components/RightSidebar.tsx
+//* 美術品の一覧を表示するサイドバー
 import React, { useState } from "react";
 
 interface Artwork {
@@ -16,15 +16,9 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ artworks }) => {
 
   return (
     <div className="w-64 flex-shrink-0 bg-gray-100 border-l border-gray-300 overflow-y-auto">
-      {/* 見出し部分（トグルボタン付き） */}
       <div className="flex justify-between items-center p-2 border-b border-gray-300 bg-gray-200">
         <h3 className="text-sm font-semibold text-gray-700">美術品一覧</h3>
-        <button
-          className="text-xs px-2 py-1 bg-white border rounded hover:bg-gray-100"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? "−" : "+"}
-        </button>
+        
       </div>
 
       {/* 一覧部分：isOpen の状態で表示切替 */}
