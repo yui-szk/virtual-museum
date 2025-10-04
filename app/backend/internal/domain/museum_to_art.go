@@ -6,15 +6,15 @@ import "time"
 type MuseumToArt struct {
     ID          int       `json:"id"`
     MuseumID    int       `json:"museumId"`
-    ObjectID    string    `json:"objectId"`
+    ObjectID    int       `json:"objectId"`
     Description string    `json:"description"`
     CreatedAt   time.Time `json:"createdAt"`
 }
 
 // MuseumToArtCreateRequest represents the request payload for adding an artwork to a museum.
 type MuseumToArtCreateRequest struct {
-    ObjectID    string `json:"objectId"`
-    Description string `json:"description"`
+    ObjectID    int       `json:"objectId"`
+    Description string    `json:"description"`
 }
 
 // MuseumToArtUpdateRequest represents the request payload for updating artwork info in a museum.
@@ -26,14 +26,14 @@ type MuseumToArtUpdateRequest struct {
 type MuseumToArtResponse struct {
     ID          int       `json:"id"`
     MuseumID    int       `json:"museumId"`
-    ObjectID    string    `json:"objectId"`
+    ObjectID    int       `json:"objectId"`
     Description string    `json:"description"`
     CreatedAt   time.Time `json:"createdAt"`
 }
 
 // ArtworkInMuseum represents artwork with additional museum-specific information.
 type ArtworkInMuseum struct {
-    ObjectID          string    `json:"objectId"`
+    ObjectID          int       `json:"objectId"`
     Description       string    `json:"description"`
     AddedAt          time.Time `json:"addedAt"`
     // 一応？)将来的に外部APIから取得した作品情報も含める可能性

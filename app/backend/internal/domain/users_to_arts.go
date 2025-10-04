@@ -6,26 +6,26 @@ import "time"
 type UsersToArt struct {
     ID        int       `json:"id"`
     UserID    int       `json:"userId"`
-    ObjectID  string    `json:"objectId"`
+    ObjectID  int       `json:"objectId"`
     CreatedAt time.Time `json:"createdAt"`
 }
 
 // UsersToArtCreateRequest represents the request payload for adding an artwork to favorites.
 type UsersToArtCreateRequest struct {
-    ObjectID string `json:"objectId"`
+    ObjectID int `json:"objectId"`
 }
 
 // UsersToArtResponse represents the response payload for user's favorite artwork.
 type UsersToArtResponse struct {
     ID        int       `json:"id"`
     UserID    int       `json:"userId"`
-    ObjectID  string    `json:"objectId"`
+    ObjectID  int       `json:"objectId"`
     CreatedAt time.Time `json:"createdAt"`
 }
 
 // FavoriteArtwork represents a favorite artwork with potential additional info.
 type FavoriteArtwork struct {
-    ObjectID    string    `json:"objectId"`
+    ObjectID    int       `json:"objectId"`
     FavoritedAt time.Time `json:"favoritedAt"`
     // 将来的に外部APIから取得した作品情報も含める可能性
     // Title         string    `json:"title,omitempty"`

@@ -87,7 +87,7 @@ func ensureSchema(db *sql.DB) error {
 		`CREATE TABLE IF NOT EXISTS museums_to_arts (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
             museum_id BIGINT NOT NULL,
-            object_id VARCHAR(255) NOT NULL,
+            object_id BIGINT NOT NULL,
             description TEXT,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             
@@ -103,7 +103,7 @@ func ensureSchema(db *sql.DB) error {
         `CREATE TABLE IF NOT EXISTS users_to_arts (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
             user_id BIGINT NOT NULL,
-            object_id VARCHAR(255) NOT NULL,
+            object_id BIGINT NOT NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
