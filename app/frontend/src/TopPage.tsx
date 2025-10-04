@@ -71,21 +71,17 @@ export default function TopPage() {
 
 
   return (
-    <div className="container" style={{ textAlign: 'center', padding: '50px' }}>
-        {/* 左右にボタンを配置し、中央に余白（justify-between）を持たせる */}
+    <div className="container text-center p-12">
         <div className="flex justify-between items-center mb-4 w-full" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                
-            {/* 左側のボタン: 自分の部屋一覧 */}
-            <button 
-                onClick={handleMyRoomsClick}
-                className="px-4 py-2 bg-blue-400 text-white font-semibold border border-blue-600 rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
-            >自分の部屋一覧</button>
+          <button 
+              onClick={handleMyRoomsClick}
+              className="px-4 py-2 bg-blue-400 text-white font-semibold border rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
+          >自分の部屋一覧</button>
 
-            {/* 右側のボタン: 新規作成 */}
-            <button 
-                onClick={handleNewCreationClick}
-                className="px-4 py-2 bg-blue-400 text-white font-semibold border border-blue-600 rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
-            >新規作成</button>
+          <button 
+              onClick={handleNewCreationClick}
+              className="px-4 py-2 bg-blue-400 text-white font-semibold border rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
+          >新規作成</button>
         </div>
       <div className="grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto my-10">
         {doorsData.map((door) => (
