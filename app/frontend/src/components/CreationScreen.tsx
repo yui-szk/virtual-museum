@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { IconContext } from 'react-icons'
-import { MdOutlineEdit, MdOutlineCheck } from 'react-icons/md'
+import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
 
 import museumRoom from '../assets/museum-sample.jpg'
@@ -201,7 +201,7 @@ export default function CreationPage() {
               className="absolute top-2 left-0 -translate-x-full bg-gray-200 hover:bg-gray-300 rounded-r px-1 py-0.5 text-gray-700 shadow"
               onClick={() => setIsRightSidebarOpen(false)}
             >
-              ＞
+              <MdArrowForwardIos />
             </button>
 
             {/* 中身 - selectedArtworkId を渡す */}
@@ -219,7 +219,7 @@ export default function CreationPage() {
             className="absolute top-20 right-0 bg-gray-200 hover:bg-gray-300 rounded-l px-1 py-0.5 text-gray-700 shadow"
             onClick={() => setIsRightSidebarOpen(true)}
           >
-            ＜
+            <MdArrowBackIos />
           </button>
         )}
       </main>
