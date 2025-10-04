@@ -57,6 +57,7 @@ func ensureSchema(db *sql.DB) error {
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
         
+		// ユーザー
         `CREATE TABLE IF NOT EXISTS users (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(100) NOT NULL,
@@ -64,6 +65,22 @@ func ensureSchema(db *sql.DB) error {
             pass_hash VARCHAR(255) NOT NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_email (email)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+
+		// 美術館
+		`CREATE TABLE IF NOT EXISTS museums (
+            id BIGINT PRIMARY KEY AUTO_INCREMENT,
+            user_id BIGINT NOT NULL,
+            name VARCHAR(200) NOT NULL,
+            description TEXT,
+            visibility ENUM('public', 'private') NOT NULL DEFAULT 'private',
+            image_url VARCHAR(500),
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            
+            INDEX idx_user_id (user_id),
+            INDEX idx_visibility (visibility)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
     }
 	for _, s := range stmts {
