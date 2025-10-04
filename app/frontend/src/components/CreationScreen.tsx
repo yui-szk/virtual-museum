@@ -31,7 +31,7 @@ interface LeftSidebarProps {
   name: `作品 ${i + 1}`,
 }));*/
 //?--------------------------------------------------------
-const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/original/DP800045.jpg'
+const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP800045.jpg'
 
 const dummyArtworks: Artwork[] = [
   { id: 1, url: artworkImageUrl, name: '作品 1' },
