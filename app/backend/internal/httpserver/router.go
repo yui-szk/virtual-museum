@@ -9,6 +9,7 @@ import (
     "github.com/go-chi/cors"
 
     "backend/internal/config"
+    "backend/internal/httpserver/handlers"
     "backend/internal/service"
 )
 
@@ -63,6 +64,13 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
             }
             respondJSON(w, http.StatusCreated, item)
         })
+
+        // Met API service and handler
+        metSvc := service.NewMetService()
+        metHandler := handlers.NewMetHandler(log, metSvc)
+
+        // idから絵画情報取得
+        api.Get("/met/objects/{id}", metHandler.GetObjectByID)
     })
 
     return r
