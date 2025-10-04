@@ -1,23 +1,18 @@
 services:
   # =========================
-  # Go Backend (Docker)
+  # Backend (Docker)
   # =========================
   - type: web
+    runtime: docker
     name: backend
-    env: docker
     dockerfilePath: app/backend/Dockerfile
-    autoDeploy: true
     plan: free
-    # アプリ側で PORT を参照して Listen してください（Render が付与）
-    # 例) :os.Getenv("PORT") / default 8080
+    autoDeployTrigger: commit
     healthCheckPath: /healthz
     envVars:
-      - key: APP_ENV
-        value: production
-      # フロントの CORS を許可（必要に応じて後で置き換え）
-      - key: CORS_ORIGINS
-        value: "*"
-      # ==== DB を使う場合 ====
+      - key: PORT
+        value: "8080"
+      # DB接続例（pserv名= mysql を内部ホストとして使える）
       - key: DB_HOST
         value: mysql
       - key: DB_PORT
@@ -29,49 +24,36 @@ services:
       - key: DB_NAME
         value: appdb
 
-    # DB（private service）へは内部ホスト名で到達
-    # backend → mysql へは `mysql:3306` で接続できます
-    dependsOn:
-      - name: mysql
-        required: false
-
   # =========================
-  # Static Frontend (Vite build)
+  # Frontend (Static Site)
   # =========================
-  - type: web
-    runtime: static
+  - type: web          # ← static ではなく web
+    runtime: static    # ← 静的サイトは runtime: static
     name: frontend
     buildCommand: |
       cd app/frontend
       npm ci
       npm run build
     staticPublishPath: app/frontend/dist
-    autoDeploy: true
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: public, max-age=600
-    # 任意: SPA ルーティング（/xxx を /index.html にフォールバック）
+    plan: free
+    autoDeployTrigger: commit
     routes:
       - type: rewrite
         source: /**/*
         destination: /index.html
     envVars:
-      # ここに “backend” の公開URL を設定（デプロイ後に置換でもOK）
       - key: VITE_API_BASE_URL
-        value: https://backend.onrender.com
+        value: https://backend.onrender.com   # ← 初回後に実URLへ差し替え
 
   # =========================
-  # (任意) MySQL as Private Service
-  # Render の “Disk” を付けて永続化
+  # MySQL (Private Service)  ← ここが修正ポイント
   # =========================
-  - type: private
+  - type: pserv        # ← private ではなく pserv
+    runtime: docker
     name: mysql
-    env: docker
-    plan: starter
-    autoDeploy: true
-    # 公式イメージを利用（compose を使わず Blueprint で完結）
     image: docker.io/mysql:8.4
+    plan: starter
+    autoDeployTrigger: commit
     envVars:
       - key: MYSQL_DATABASE
         value: appdb
