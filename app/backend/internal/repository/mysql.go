@@ -48,11 +48,6 @@ func NewMySQLItemRepository(dsn string, migrate bool) (*MySQLItemRepository, err
 	return &MySQLItemRepository{db: db}, nil
 }
 
-// GetDB returns the underlying database connection
-func (r *MySQLItemRepository) GetDB() *sql.DB {
-	return r.db
-}
-
 // email重複なし、nullなし
 func ensureSchema(db *sql.DB) error {
 	stmts := []string{
@@ -162,4 +157,53 @@ func (r *MySQLItemRepository) Create(name string) (domain.Item, error) {
 		return domain.Item{}, err
 	}
 	return domain.Item{ID: int(id64), Name: name, CreatedAt: now}, nil
+}
+
+// リポジトリ層の実装
+// MuseumRepository defines storage operations for Museums.
+type MuseumRepository interface {
+    GetPublicMuseumsExcludingUser(excludeUserID int) ([]domain.Museum, error)
+    // 将来的に他のメソッドも追加予定
+    // GetByID(id int) (domain.Museum, error)
+    // Create(museum domain.Museum) (domain.Museum, error)
+}
+
+// MySQLMuseumRepository implements MuseumRepository backed by MySQL.
+type MySQLMuseumRepository struct {
+    db *sql.DB
+}
+
+func NewMySQLMuseumRepository(db *sql.DB) *MySQLMuseumRepository {
+    return &MySQLMuseumRepository{db: db}
+}
+
+// GetPublicMuseumsExcludingUser returns public museums excluding the specified user's museums
+func (r *MySQLMuseumRepository) GetPublicMuseumsExcludingUser(excludeUserID int) ([]domain.Museum, error) {
+    query := `
+        SELECT id, user_id, name, description, visibility, image_url, created_at 
+        FROM museums 
+        WHERE visibility = 'public' AND user_id != ? 
+        ORDER BY created_at DESC
+    `
+    
+    rows, err := r.db.Query(query, excludeUserID)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var museums []domain.Museum
+    for rows.Next() {
+        var m domain.Museum
+        if err := rows.Scan(&m.ID, &m.UserID, &m.Name, &m.Description, &m.Visibility, &m.ImageURL, &m.CreatedAt); err != nil {
+            return nil, err
+        }
+        museums = append(museums, m)
+    }
+
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return museums, nil
 }

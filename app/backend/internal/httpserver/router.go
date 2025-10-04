@@ -72,12 +72,11 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
         // idから絵画情報取得
         api.Get("/met/objects/{id}", metHandler.GetObjectByID)
 
-        // Museum API handler
-        museumHandler := handlers.NewMuseumHandler(log, museumSvc)
-
-        // Museum endpoints
-        api.Get("/museum", museumHandler.Get)
-        api.Post("/museum/{id}/title", museumHandler.UpdateTitle)
+        // Museum API
+        if museumSvc != nil {
+            museumHandler := handlers.NewMuseumHandler(log, museumSvc)
+            api.Get("/museums", museumHandler.GetPublicMuseums)
+        }
     })
 
     return r
