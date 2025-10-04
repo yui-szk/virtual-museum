@@ -65,8 +65,12 @@ func main() {
     if museumRepo != nil {
         museumSvc = service.NewMuseumService(museumRepo)
     }
-    // Routerは (cfg, log, itemSvc, museumSvc) のシグネチャ
-    router := httpserver.NewRouter(cfg, log, svc, museumSvc)
+
+    // ArtworkSearchServiceを作成
+    artworkSearchSvc := service.NewArtworkSearchService()
+
+    // Routerは (cfg, log, itemSvc, museumSvc, artworkSearchSvc) のシグネチャ
+    router := httpserver.NewRouter(cfg, log, svc, museumSvc, artworkSearchSvc)
 
 
     srv := &http.Server{
