@@ -117,11 +117,8 @@ const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
         transition-transform 
         duration-100 
         ease-in-out 
-        rounded-sm 
-        
-        /* ドアのまわりに黒い縁 (border-2 border-black) */
+        rounded-sm
         border-8 border-gray-800
-        
         shadow-md 
         flex flex-col items-center justify-start 
         overflow-hidden 
@@ -133,10 +130,7 @@ const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
       <div
         className="
           absolute top-4 left-4 right-4 bottom-4 
-          
-          // 中の線
           border-2 border-gray-800
-          
           shadow-inner
         "
       />
@@ -146,11 +140,7 @@ const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
         className="
           absolute right-[12px] top-1/2 
           -translate-y-1/2 
-          
-          /* ドアノブを丸くするためにサイズを調整 (w-4 h-4は正方形) */
           w-4 h-4 
-          
-          /* 変更3: ドアノブはグレーで固定、円のように丸くする */
           bg-gray-300 
           border border-gray-700 
           rounded-full
