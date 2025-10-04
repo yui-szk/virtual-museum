@@ -38,7 +38,8 @@ services:
   # =========================
   # Static Frontend (Vite build)
   # =========================
-  - type: static
+  - type: web
+    runtime: static
     name: frontend
     buildCommand: |
       cd app/frontend
