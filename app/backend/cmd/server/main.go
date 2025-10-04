@@ -25,16 +25,30 @@ func main() {
 
     // Repository and service wiring
     var repo repository.ItemRepository
+    var museumRepo repository.MuseumRepository
+
     if cfg.DBEnabled {
         dsn := cfg.MySQLDSN()
-        if mysqlRepo, err := repository.NewMySQLItemRepository(dsn, cfg.DBMigrate); err != nil {
+        if mysqlDB, err := sql.Open("mysql", dsn); err != nil {
             log.Error("mysql connect failed; falling back to memory", slog.String("error", err.Error()))
             mem := repository.NewInMemoryItemRepository()
             _ = mem.MustSeed("First item", "Second item")
             repo = mem
+            // museumRepoはnilのまま（エラーハンドリング用）
         } else {
-            log.Info("using mysql repository")
-            repo = mysqlRepo
+            // MySQL接続成功時
+            if mysqlRepo, err := repository.NewMySQLItemRepository(dsn, cfg.DBMigrate); err != nil {
+                log.Error("mysql item repo failed; falling back to memory", slog.String("error", err.Error()))
+                mem := repository.NewInMemoryItemRepository()
+                _ = mem.MustSeed("First item", "Second item")
+                repo = mem
+            } else {
+                log.Info("using mysql repository")
+                repo = mysqlRepo
+            }
+            
+            // Museum リポジトリの初期化
+            museumRepo = repository.NewMySQLMuseumRepository(mysqlDB)
         }
     } else {
         mem := repository.NewInMemoryItemRepository()
