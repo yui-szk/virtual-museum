@@ -7,36 +7,31 @@ interface Artwork {
   name: string;
 }
 
+//! 選択された作品IDを親に伝える
 interface RightSidebarProps {
-  artworks: Artwork[];
-  onSelectArtwork: (id: number) => void;
+    artworks: Artwork[];
+    onSelectArtwork: (id: number) => void;
+    // 選択中の作品をハイライトするためのプロパティ
+    selectedArtworkId: number | null; 
 }
-
-const RightSidebar: React.FC<RightSidebarProps> = ({ artworks }) => {
-  const [isOpen, setIsOpen] = useState(true); // ← サイドバー内部で状態管理
-
-  return (
-    <div className="w-64 flex-shrink-0 bg-gray-100 border-l border-gray-300 overflow-y-auto">
-      <div className="flex justify-between items-center p-2 border-b border-gray-300 bg-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700">美術品一覧</h3>
-        
-      </div>
-
-      {/* 一覧部分：isOpen の状態で表示切替 */}
-      {isOpen && (
-        <div className="grid grid-cols-2 gap-1 p-1">
-          {artworks.map((art) => (
-            <div
-              key={art.id}
-              className="aspect-square bg-white border border-gray-400 cursor-grab rounded-sm overflow-hidden shadow-sm flex items-center justify-center text-xs"
-            >
-              {art.id}
-            </div>
-          ))}
+const RightSidebar: React.FC<RightSidebarProps> = ({ artworks, onSelectArtwork, selectedArtworkId }) => (
+    <div className="w-full h-full p-4 overflow-y-auto">
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">美術館一覧</h3>
+        <div className="grid grid-cols-2 gap-2">
+            {artworks.map((artwork) => (
+                <div 
+                    key={artwork.id} 
+                    className={`aspect-square flex items-center justify-center border rounded cursor-pointer transition-colors ${
+                        selectedArtworkId === artwork.id 
+                            ? 'bg-blue-500 text-white border-blue-600 shadow-lg' // 選択中のスタイル
+                            : 'bg-white text-gray-800 hover:bg-gray-200 border-gray-300' // 通常のスタイル
+                    }`} 
+                    onClick={() => onSelectArtwork(artwork.id)}
+                >
+                    {artwork.id}
+                </div>
+            ))}
         </div>
-      )}
     </div>
-  );
-};
-
+);
 export default RightSidebar;
