@@ -35,22 +35,19 @@ func main() {
             _ = mem.MustSeed("First item", "Second item")
             repo = mem
             // Create a dummy museum service for memory mode
-            metSvc := service.NewMetService()
-            museumSvc = service.NewMuseumService(nil, metSvc)
+            museumSvc = service.NewMuseumService(nil)
         } else {
             log.Info("using mysql repository")
             repo = mysqlRepo
             // Create museum service with database connection
-            metSvc := service.NewMetService()
-            museumSvc = service.NewMuseumService(mysqlRepo.GetDB(), metSvc)
+            museumSvc = service.NewMuseumService(mysqlRepo.GetDB())
         }
     } else {
         mem := repository.NewInMemoryItemRepository()
         _ = mem.MustSeed("First item", "Second item")
         repo = mem
         // Create a dummy museum service for memory mode
-        metSvc := service.NewMetService()
-        museumSvc = service.NewMuseumService(nil, metSvc)
+        museumSvc = service.NewMuseumService(nil)
     }
     svc := service.NewItemService(repo)
 
