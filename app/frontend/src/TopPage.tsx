@@ -55,9 +55,8 @@ const doorsData: Door[] = [
   { id: 10, user_id: 209, name: '静寂の展示室', color: getRandomColor(), isMine: false }, 
 ];
 
-//*アプリケーションのトップページ（ドアの選択画面）コンポーネント。
+//*アプリケーションのトップページ（ドアの選択画面）コンポーネント
 export default function TopPage() {
-    //! 各画面に遷移するように要変更
     // 新規作成ボタンが押された時の動作
     const handleNewCreationClick = () => {
         // '新規作成'用のCreationPageに遷移させるパスを設定
