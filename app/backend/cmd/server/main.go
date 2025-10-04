@@ -2,6 +2,7 @@ package main
 
 import (
     "context"
+    "database/sql"
     "fmt"
     "log/slog"
     "net/http"
@@ -15,6 +16,7 @@ import (
     "backend/internal/logger"
     "backend/internal/repository"
     "backend/internal/service"
+    _"github.com/go-sql-driver/mysql"
 )
 
 // main wires dependencies manually. A wire-ready provider set is also included
@@ -25,16 +27,32 @@ func main() {
 
     // Repository and service wiring
     var repo repository.ItemRepository
+    var museumRepo repository.MuseumRepository
+    var mysqlDB *sql.DB
+
     if cfg.DBEnabled {
         dsn := cfg.MySQLDSN()
-        if mysqlRepo, err := repository.NewMySQLItemRepository(dsn, cfg.DBMigrate); err != nil {
+        if db, err := sql.Open("mysql", dsn); err != nil {
             log.Error("mysql connect failed; falling back to memory", slog.String("error", err.Error()))
             mem := repository.NewInMemoryItemRepository()
             _ = mem.MustSeed("First item", "Second item")
             repo = mem
+            // museumRepoはnilのまま（エラーハンドリング用）
         } else {
-            log.Info("using mysql repository")
-            repo = mysqlRepo
+            // MySQL接続成功時
+            if mysqlRepo, err := repository.NewMySQLItemRepository(dsn, cfg.DBMigrate); err != nil {
+                log.Error("mysql item repo failed; falling back to memory", slog.String("error", err.Error()))
+                mem := repository.NewInMemoryItemRepository()
+                _ = mem.MustSeed("First item", "Second item")
+                repo = mem
+            } else {
+                mysqlDB = db
+                log.Info("using mysql repository")
+                repo = mysqlRepo
+            }
+            
+            // Museum リポジトリの初期化
+            museumRepo = repository.NewMySQLMuseumRepository(mysqlDB)
         }
     } else {
         mem := repository.NewInMemoryItemRepository()
@@ -43,7 +61,13 @@ func main() {
     }
     svc := service.NewItemService(repo)
 
-    router := httpserver.NewRouter(cfg, log, svc)
+    var museumSvc *service.MuseumService
+    if museumRepo != nil {
+        museumSvc = service.NewMuseumService(museumRepo)
+    }
+    // Routerは (cfg, log, itemSvc, museumSvc) のシグネチャ
+    router := httpserver.NewRouter(cfg, log, svc, museumSvc)
+
 
     srv := &http.Server{
         Addr:              fmt.Sprintf(":%d", cfg.Port),
@@ -72,6 +96,9 @@ func main() {
     defer cancel()
     if err := srv.Shutdown(ctx); err != nil {
         log.Error("graceful shutdown failed", slog.String("error", err.Error()))
+    }
+    if mysqlDB != nil {
+        _ = mysqlDB.Close()
     }
     log.Info("server stopped")
 }
