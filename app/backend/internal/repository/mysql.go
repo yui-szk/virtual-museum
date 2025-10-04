@@ -48,14 +48,73 @@ func NewMySQLItemRepository(dsn string, migrate bool) (*MySQLItemRepository, err
 	return &MySQLItemRepository{db: db}, nil
 }
 
+// email重複なし、nullなし
 func ensureSchema(db *sql.DB) error {
 	stmts := []string{
-		`CREATE TABLE IF NOT EXISTS items (
+        `CREATE TABLE IF NOT EXISTS items (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(100) NOT NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
-	}
+        
+		// ユーザー
+        `CREATE TABLE IF NOT EXISTS users (
+            id BIGINT PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            pass_hash VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_email (email)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+
+		// 美術館
+		`CREATE TABLE IF NOT EXISTS museums (
+            id BIGINT PRIMARY KEY AUTO_INCREMENT,
+            user_id BIGINT NOT NULL,
+            name VARCHAR(200) NOT NULL,
+            description TEXT,
+            visibility ENUM('public', 'private') NOT NULL DEFAULT 'private',
+            image_url VARCHAR(500),
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            
+            INDEX idx_user_id (user_id),
+            INDEX idx_visibility (visibility)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+
+		// 美術館と作品の紐付け
+		`CREATE TABLE IF NOT EXISTS museums_to_arts (
+            id BIGINT PRIMARY KEY AUTO_INCREMENT,
+            museum_id BIGINT NOT NULL,
+            object_id BIGINT NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            
+            FOREIGN KEY (museum_id) REFERENCES museums(id) ON DELETE CASCADE,
+            
+            UNIQUE KEY uk_museum_object (museum_id, object_id),
+            
+            INDEX idx_museum_id (museum_id),
+            INDEX idx_object_id (object_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+
+		// ユーザーのお気に入り作品
+        `CREATE TABLE IF NOT EXISTS users_to_arts (
+            id BIGINT PRIMARY KEY AUTO_INCREMENT,
+            user_id BIGINT NOT NULL,
+            object_id BIGINT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            
+            UNIQUE KEY uk_user_object (user_id, object_id),
+            
+            INDEX idx_user_id (user_id),
+            INDEX idx_object_id (object_id),
+            INDEX idx_created_at (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`,
+    }
 	for _, s := range stmts {
 		if _, err := db.Exec(s); err != nil {
 			return fmt.Errorf("schema: %w", err)
