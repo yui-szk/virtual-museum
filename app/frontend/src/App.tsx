@@ -16,7 +16,7 @@ export default function App() {
             <Route path="/" element={<TopPage />} />
 
             <Route path="/view" element={<MuseumScreen />} />
-            <Route path="/create" element={<CreationScreen />} />
+            <Route path="/create/new" element={<CreationScreen />} />
             <Route path="/view/:museumId" element={<MuseumScreen />} />
             <Route path="/show" element={<MuseumMyListScreen />} />
             </Routes>
