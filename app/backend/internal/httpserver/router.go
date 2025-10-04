@@ -4,6 +4,8 @@ import (
     "encoding/json"
     "log/slog"
     "net/http"
+    "strconv"
+    "fmt"
 
     "github.com/go-chi/chi/v5"
     "github.com/go-chi/cors"
@@ -34,34 +36,25 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
 
     // API routes
     r.Route("/api/v1", func(api chi.Router) {
-        // GET /items -> list
-        api.Get("/items", func(w http.ResponseWriter, r *http.Request) {
-            items, err := itemSvc.List()
-            if err != nil {
-                respondError(w, http.StatusInternalServerError, "failed to list items")
-                log.Error("list items failed", slog.String("error", err.Error()))
-                return
-            }
-            respondJSON(w, http.StatusOK, items)
-        })
+        // the MET API proxy
+        metSvc := service.NewMetService()
 
-        // POST /items -> create with basic validation
-        type createReq struct {
-            Name string `json:"name"`
-        }
-
-        api.Post("/items", func(w http.ResponseWriter, r *http.Request) {
-            var req createReq
-            if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-                respondError(w, http.StatusBadRequest, "invalid JSON body")
-                return
-            }
-            item, err := itemSvc.Create(req.Name)
+        // GET /met/objects/{id}
+        api.Get("/met/objects/{id}", func(w http.ResponseWriter, r *http.Request) {
+            idStr := chi.URLParam(r, "id")
+            id, err := strconv.Atoi(idStr)
             if err != nil {
-                respondError(w, http.StatusBadRequest, err.Error())
+                respondError(w, http.StatusBadRequest, "invalid id")
                 return
             }
-            respondJSON(w, http.StatusCreated, item)
+
+            obj, err := metSvc.GetObjectByID(id)
+            if err != nil {
+                respondError(w, http.StatusBadGateway, fmt.Sprintf("MET API error: %v", err))
+                return
+            }
+
+            respondJSON(w, http.StatusOK, obj)
         })
     })
 
