@@ -51,17 +51,18 @@ const dummyBackgrounds: Background[] = [
 ]
 
 const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSelect }) => (
-  <div className="w-40 flex-shrink-0 bg-gray-100 border-r border-gray-300 overflow-y-auto p-2">
-    <h3 className="text-sm font-semibold mb-1 text-gray-700">背景</h3>
-    <div className="space-y-4">
-      {backgrounds.map((bg) => (
-        <div key={bg.id} className="cursor-pointer" onClick={() => onBackgroundSelect(bg.url)}>
-          <p className="text-xs text-gray-600 mb-1">{bg.name}</p>
-          <div className="w-full h-16 border border-gray-400 rounded-sm overflow-hidden shadow-sm">
+  <div className="w-full h-full flex flex-col bg-white">
+    <div className="p-4 border-b border-gray-200">
+      <h3 className="text-sm font-semibold text-gray-800">背景一覧</h3>
+    </div>
+    <div className="flex-1 p-4 overflow-y-auto">
+      <div className="grid grid-cols-1 gap-3">
+        {backgrounds.map((bg) => (
+          <div key={bg.id} onClick={() => onBackgroundSelect(bg.url)}>
             <img src={bg.url} alt={bg.name} className="w-full h-full object-cover" />
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   </div>
 )
@@ -71,6 +72,7 @@ export default function CreationPage() {
   const [title, setTitle] = useState('')
   const [currentBackground, setCurrentBackground] = useState<string>(bgImageUrl)
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true)
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true)
 
   // 新しく追加
   const [selectedArtworkId, setSelectedArtworkId] = useState<number | null>(null)
@@ -96,7 +98,7 @@ export default function CreationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
       {/* 画面タイトル */}
       <header className="flex-shrink-0 p-3 bg-white border-b border-gray-200">
         <h1 className="text-lg font-semibold text-gray-800">新規作成</h1>
@@ -130,7 +132,7 @@ export default function CreationPage() {
         )}
 
         {/* 中央 */}
-        <div className="flex-1 flex flex-col items-center p-3 relative overflow-y-auto bg-gray-200">
+        <div className="flex-1 flex flex-col items-center p-3 relative overflow-y-auto max-h-[calc(100vh-12rem)]">
           <div className="relative w-full overflow-hidden flex justify-center items-center aspect-video">
             <img
               src={currentBackground}
@@ -140,9 +142,6 @@ export default function CreationPage() {
 
             {/* 配置スロット (A, B, C) - Adjusted for image alignment */}
             <div className="absolute inset-0">
-              {' '}
-              {/* Use inset-0 to cover the whole image area */}
-              {/* Slot A: Positioned over the left inner artwork */}
               <div
                 onClick={() => handlePlaceArtwork('A')}
                 className="absolute top-[15%] left-[17%] w-[20%] h-[40%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
@@ -187,7 +186,7 @@ export default function CreationPage() {
             </div>
           </div>
           {/* タイトル入力欄 */}
-          <div className="flex justify-between items-end w-full max-w-xl mt-4 mb-4">
+          <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
             <button className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow">
               戻る
             </button>
@@ -217,34 +216,31 @@ export default function CreationPage() {
 
         {/* 右サイドバー */}
         {isRightSidebarOpen && (
-          <div className="relative w-64 bg-gray-100 border-l border-gray-300 flex-shrink-0 transition-all duration-300">
-            {/* トグルボタン */}
+          <div className="relative w-72 bg-white border-l border-gray-200 flex-shrink-0 shadow-lg transition-all duration-300">
             <button
-              className="absolute top-2 left-0 -translate-x-full bg-gray-200 hover:bg-gray-300 rounded-r px-1 py-0.5 text-gray-700 shadow"
+              className="absolute top-4 left-0 -translate-x-full bg-white hover:bg-gray-50 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 shadow-md border border-r-0 border-gray-200 transition-all duration-200"
               onClick={() => setIsRightSidebarOpen(false)}
             >
               <MdArrowForwardIos />
             </button>
 
-            {/* 中身 - selectedArtworkId を渡す */}
             <RightSidebar
               artworks={dummyArtworks}
               onSelectArtwork={setSelectedArtworkId}
-              selectedArtworkId={selectedArtworkId} // 選択状態を渡す
+              selectedArtworkId={selectedArtworkId}
             />
           </div>
         )}
 
-        {/* ... (isRightSidebarOpen が false の場合のボタンは変更なし) ... */}
         {!isRightSidebarOpen && (
           <button
-            className="absolute top-20 right-0 bg-gray-200 hover:bg-gray-300 rounded-l px-1 py-0.5 text-gray-700 shadow"
+            className="absolute top-16 right-0 bg-white hover:bg-gray-50 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 shadow-md border border-r-0 border-gray-200 transition-all duration-200"
             onClick={() => setIsRightSidebarOpen(true)}
           >
             <MdArrowBackIos />
           </button>
         )}
-      </main>
+      </div>
     </div>
   )
 }
