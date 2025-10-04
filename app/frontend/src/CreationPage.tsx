@@ -84,7 +84,7 @@ export default function CreationPage() {
       
       {/* 画面タイトル */}
       <header className="flex-shrink-0 p-3 bg-white border-b border-gray-200">
-        <h1 className="text-lg font-semibold text-gray-800">自分の部屋</h1>
+        <h1 className="text-lg font-semibold text-gray-800">新規作成</h1>
       </header>
 
       {/* メインレイアウト: 左サイドバー + 中央 + 右サイドバー */}
