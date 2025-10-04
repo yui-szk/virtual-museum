@@ -48,6 +48,11 @@ func NewMySQLItemRepository(dsn string, migrate bool) (*MySQLItemRepository, err
 	return &MySQLItemRepository{db: db}, nil
 }
 
+// GetDB returns the underlying database connection
+func (r *MySQLItemRepository) GetDB() *sql.DB {
+	return r.db
+}
+
 // email重複なし、nullなし
 func ensureSchema(db *sql.DB) error {
 	stmts := []string{
