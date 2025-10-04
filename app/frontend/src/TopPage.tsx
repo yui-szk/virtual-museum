@@ -17,23 +17,37 @@ interface Door {
   color: string; // ドアの色
   isMine: boolean;
 }
+//* ドアの色作成する関数
+const getRandomColor = (): string => {
+  // 色相 (Hue): 0から360度まで完全にランダム
+  const h = Math.floor(Math.random() * 360);
+  
+  // 彩度 (Saturation): 60%から80%の間でランダム (色が淡くなりすぎないように制御)
+  const s = Math.floor(Math.random() * 20) + 60; 
+  
+  // 明度 (Lightness): 70の10前後の間でランダム (明るく柔らかい色に固定)
+  const l = Math.floor(Math.random() * 20) + 75; 
+  
+  // HSL文字列を返す
+  return `hsl(${h}, ${s}%, ${l}%)`;
+};
 
 // ドアのデータ配列 (user_idと美術館のnameを模した値を設定)
 // HACK: 本来はサーバーから取得するが、今回は静的データで代用
 const doorsData: Door[] = [
   // 自分の部屋
-  { id: 1, user_id: 100, name: '自分の部屋', color: '#ffc107', isMine: true }, // 黄色
+  { id: 1, user_id: 100, name: '自分の部屋', color: getRandomColor(), isMine: true }, 
   // 他の人の部屋 (美術館の名前を設定)
-  { id: 2, user_id: 201, name: '夕暮れの美術館', color: '#f5f5dc', isMine: false }, // 薄いベージュ
-  { id: 3, user_id: 202, name: '海の景色', color: '#4682b4', isMine: false }, // 青
-  { id: 4, user_id: 203, name: '未来派ギャラリー', color: '#4682b4', isMine: false }, // 青
-  { id: 5, user_id: 204, name: '光と影の部屋', color: '#ffc107', isMine: false }, // 黄色
+  { id: 2, user_id: 201, name: '夕暮れの美術館', color: getRandomColor(), isMine: false }, 
+  { id: 3, user_id: 202, name: '海の景色', color: getRandomColor(), isMine: false }, 
+  { id: 4, user_id: 203, name: '未来派ギャラリー', color: getRandomColor(), isMine: false }, 
+  { id: 5, user_id: 204, name: '光と影の部屋', color: getRandomColor(), isMine: false }, 
   
-  { id: 6, user_id: 205, name: '深淵の青', color: '#4682b4', isMine: false }, // 青
-  { id: 7, user_id: 206, name: '黄金の肖像画', color: '#ffc107', isMine: false }, // 黄色
-  { id: 8, user_id: 207, name: '情熱のキャンバス', color: '#dc3545', isMine: false }, // 赤
-  { id: 9, user_id: 208, name: '太陽のホール', color: '#ffc107', isMine: false }, // 黄色
-  { id: 10, user_id: 209, name: '静寂の展示室', color: '#4682b4', isMine: false }, // 青
+  { id: 6, user_id: 205, name: '深淵の青', color: getRandomColor(), isMine: false }, 
+  { id: 7, user_id: 206, name: '黄金の肖像画', color: getRandomColor(), isMine: false }, 
+  { id: 8, user_id: 207, name: '情熱のキャンバス', color: getRandomColor(), isMine: false }, 
+  { id: 9, user_id: 208, name: '太陽のホール', color: getRandomColor(), isMine: false }, 
+  { id: 10, user_id: 209, name: '静寂の展示室', color: getRandomColor(), isMine: false }, 
 ];
 
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント。
