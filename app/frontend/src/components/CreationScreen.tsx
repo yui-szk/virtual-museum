@@ -116,21 +116,31 @@ export default function CreationPage() {
           </div>
         </div>
 
-        {/* 右サイドバー（トグル付き） */}
-        <div className={`relative transition-all duration-300 ${isRightSidebarOpen ? "w-64" : "w-6"} bg-gray-100 border-l border-gray-300 flex-shrink-0`}>
-          {/* トグルボタン */}
-          <button
-            className="absolute top-2 left-0 -translate-x-full bg-gray-200 hover:bg-gray-300 rounded-r px-1 py-0.5 text-gray-700 shadow"
-            onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-          >
-            {isRightSidebarOpen ? "＞" : "＜"}
-          </button>
+{/* 右サイドバー（トグル付き） */}
+{isRightSidebarOpen && (
+  <div className="relative w-64 bg-gray-100 border-l border-gray-300 flex-shrink-0 transition-all duration-300">
+    {/* トグルボタン */}
+    <button
+      className="absolute top-2 left-0 -translate-x-full bg-gray-200 hover:bg-gray-300 rounded-r px-1 py-0.5 text-gray-700 shadow"
+      onClick={() => setIsRightSidebarOpen(false)}
+    >
+      ＞
+    </button>
 
-          {/* 中身 */}
-          {isRightSidebarOpen && (
-            <RightSidebar artworks={dummyArtworks} />
-          )}
-        </div>
+    {/* 中身 */}
+    <RightSidebar artworks={dummyArtworks} />
+  </div>
+)}
+
+{!isRightSidebarOpen && (
+  <button
+    className="absolute top-20 right-0 bg-gray-200 hover:bg-gray-300 rounded-l px-1 py-0.5 text-gray-700 shadow"
+    onClick={() => setIsRightSidebarOpen(true)}
+  >
+    ＜
+  </button>
+)}
+
       </main>
     </div>
   );
