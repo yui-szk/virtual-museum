@@ -25,6 +25,8 @@ func main() {
 
     // Repository and service wiring
     var repo repository.ItemRepository
+    var museumSvc *service.MuseumService
+    
     if cfg.DBEnabled {
         dsn := cfg.MySQLDSN()
         if mysqlRepo, err := repository.NewMySQLItemRepository(dsn, cfg.DBMigrate); err != nil {
@@ -32,18 +34,27 @@ func main() {
             mem := repository.NewInMemoryItemRepository()
             _ = mem.MustSeed("First item", "Second item")
             repo = mem
+            // Create a dummy museum service for memory mode
+            metSvc := service.NewMetService()
+            museumSvc = service.NewMuseumService(nil, metSvc)
         } else {
             log.Info("using mysql repository")
             repo = mysqlRepo
+            // Create museum service with database connection
+            metSvc := service.NewMetService()
+            museumSvc = service.NewMuseumService(mysqlRepo.GetDB(), metSvc)
         }
     } else {
         mem := repository.NewInMemoryItemRepository()
         _ = mem.MustSeed("First item", "Second item")
         repo = mem
+        // Create a dummy museum service for memory mode
+        metSvc := service.NewMetService()
+        museumSvc = service.NewMuseumService(nil, metSvc)
     }
     svc := service.NewItemService(repo)
 
-    router := httpserver.NewRouter(cfg, log, svc)
+    router := httpserver.NewRouter(cfg, log, svc, museumSvc)
 
     srv := &http.Server{
         Addr:              fmt.Sprintf(":%d", cfg.Port),
