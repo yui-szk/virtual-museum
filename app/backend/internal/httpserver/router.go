@@ -11,6 +11,7 @@ import (
     "github.com/go-chi/cors"
 
     "backend/internal/config"
+    "backend/internal/httpserver/handlers"
     "backend/internal/service"
 )
 
@@ -45,8 +46,26 @@ func NewRouter(cfg config.Config, log *slog.Logger, metSvc *service.MetService) 
         // Handlers
         metHandler := handlers.NewMetHandler(log, metSvc)
 
-        // GET /met/objects/{id}
-        api.Get("/met/objects/{id}",metHandler.GetObjectByID)
+        api.Post("/items", func(w http.ResponseWriter, r *http.Request) {
+            var req createReq
+            if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+                respondError(w, http.StatusBadRequest, "invalid JSON body")
+                return
+            }
+            item, err := itemSvc.Create(req.Name)
+            if err != nil {
+                respondError(w, http.StatusBadRequest, err.Error())
+                return
+            }
+            respondJSON(w, http.StatusCreated, item)
+        })
+
+        // Met API service and handler
+        metSvc := service.NewMetService()
+        metHandler := handlers.NewMetHandler(log, metSvc)
+
+        // idから絵画情報取得
+        api.Get("/met/objects/{id}",　metHandler.GetObjectByID)
     })
 
     return r

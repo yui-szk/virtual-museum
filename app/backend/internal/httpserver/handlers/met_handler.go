@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"backend/internal/service"
-	"backend/internal/httpserver"
 )
 
 type MetHandler struct {
@@ -26,7 +26,7 @@ func (h *MetHandler) GetObjectByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id <= 0 {
-		httpserver.RespondError(w, http.StatusBadRequest, "invalid id")
+		respondError(w, http.StatusBadRequest, "invalid id")
 		return
 	}
 
@@ -36,9 +36,19 @@ func (h *MetHandler) GetObjectByID(w http.ResponseWriter, r *http.Request) {
 			slog.String("error", err.Error()),
 			slog.Int("id", id),
 		)
-		httpserver.RespondError(w, http.StatusBadGateway, fmt.Sprintf("MET API error: %v", err))
+		respondError(w, http.StatusBadGateway, fmt.Sprintf("MET API error: %v", err))
 		return
 	}
 
-	httpserver.RespondJSON(w, http.StatusOK, obj)
+	respondJSON(w, http.StatusOK, obj)
+}
+
+func respondJSON(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(v)
+}
+
+func respondError(w http.ResponseWriter, status int, msg string) {
+	respondJSON(w, status, map[string]string{"error": msg})
 }
