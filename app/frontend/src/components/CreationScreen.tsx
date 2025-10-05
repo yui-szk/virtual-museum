@@ -7,6 +7,7 @@ import {
   MdArrowForwardIos,
 } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
+import FramedArtwork from './FramedArtwork'
 import bgImageUrl1 from '../assets/background/museum-back-1.jpg'
 import bgImageUrl2 from '../assets/background/museum-back-2.jpg'
 
@@ -114,40 +115,26 @@ export default function CreationPage() {
     }
   }
 
-  const renderSlotContent = (slot: Slot) => {
-    const artwork = placements[slot]
-
-    if (artwork) {
-      return (
-        <img
-          src={artwork.url}
-          alt={artwork.name}
-          className="w-full h-full object-contain p-1"
-          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-            e.currentTarget.src =
-              'https://placehold.co/100x100/990000/FFFFFF?text=Load+Error'
-          }}
-        />
-      )
-    }
-
-    const isSelected = selectedArtworkId !== null
-
-    return (
-      <div
-        className={`text-sm font-bold text-gray-800 flex flex-col items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
-          isSelected
-            ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
-            : 'bg-white/70 border-gray-400 hover:bg-gray-100'
-        }`}
-      >
-        <span>{slot}</span>
-        <span className="text-xs mt-1">
-          {isSelected ? 'ここに配置' : 'クリックで配置/削除'}
-        </span>
-      </div>
-    )
+const renderSlotContent = (slot: Slot) => {
+  const artwork = placements[slot]
+  if (artwork) {
+    return <FramedArtwork artwork={artwork} />
   }
+
+  const isSelected = selectedArtworkId !== null
+  return (
+    <div
+      className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
+        isSelected
+          ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
+          : 'bg-white/70 border-gray-400 hover:bg-gray-100'
+      }`}
+    >
+      <span className="text-sm font-bold text-gray-800">{slot}</span>
+    </div>
+  )
+}
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
@@ -202,53 +189,53 @@ export default function CreationPage() {
             <div className="absolute inset-0">
               <div
                 onClick={() => handlePlaceArtwork('A')}
-                className="absolute transition-all duration-200 cursor-pointer overflow-hidden rounded-md shadow-lg"
+                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
                 style={{
                   width: '12%',
                   height: '25%',
                   top: '51%',
                   left: '22%',
-                  backgroundColor: placements.A
-                    ? 'transparent'
-                    : 'rgba(255, 255, 255, 0.7)',
-                  border: placements.A ? 'none' : '2px dashed #9ca3af',
                 }}
               >
-                {renderSlotContent('A')}
+                {placements.A ? (
+                  <FramedArtwork artwork={placements.A} />
+                ) : (
+                  renderSlotContent('A')
+                )}
               </div>
 
               <div
                 onClick={() => handlePlaceArtwork('B')}
-                className="absolute transition-all duration-200 cursor-pointer overflow-hidden rounded-md shadow-2xl"
+                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
                 style={{
                   width: '18%',
                   height: '26%',
                   top: '49%',
                   left: '38%',
-                  backgroundColor: placements.B
-                    ? 'transparent'
-                    : 'rgba(255, 255, 255, 0.7)',
-                  border: placements.B ? 'none' : '2px dashed #9ca3af',
                 }}
               >
-                {renderSlotContent('B')}
+                {placements.B ? (
+                  <FramedArtwork artwork={placements.B} />
+                ) : (
+                  renderSlotContent('B')
+                )}
               </div>
 
               <div
                 onClick={() => handlePlaceArtwork('C')}
-                className="absolute transition-all duration-200 cursor-pointer overflow-hidden rounded-md shadow-lg"
+                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
                 style={{
                   width: '12%',
                   height: '25%',
                   top: '52%',
                   right: '29%',
-                  backgroundColor: placements.C
-                    ? 'transparent'
-                    : 'rgba(255, 255, 255, 0.7)',
-                  border: placements.C ? 'none' : '2px dashed #9ca3af',
                 }}
               >
-                {renderSlotContent('C')}
+                {placements.C ? (
+                  <FramedArtwork artwork={placements.C} />
+                ) : (
+                  renderSlotContent('C')
+                )}
               </div>
             </div>
           </div>
