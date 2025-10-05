@@ -1,15 +1,11 @@
 import React, { useState } from 'react'
 import { IconContext } from 'react-icons'
-import {
-  MdOutlineEdit,
-  MdOutlineCheck,
-  MdArrowBackIos,
-  MdArrowForwardIos,
-} from 'react-icons/md'
+import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
 import FramedArtwork from './FramedArtwork'
 import bgImageUrl1 from '../assets/background/museum-back-1.jpg'
 import bgImageUrl2 from '../assets/background/museum-back-2.jpg'
+import CanvasMerge from './CanvasMerge'
 
 interface Artwork {
   id: number
@@ -29,8 +25,7 @@ interface LeftSidebarProps {
 }
 
 // 適当な美術品の読み込み
-const artworkImageUrl =
-  'https://images.metmuseum.org/CRDImages/dp/web-large/DP821127.jpg'
+const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP821127.jpg'
 
 // 作品のダミーデータ生成
 const baseIdNumber = 821127
@@ -56,10 +51,7 @@ const dummyBackgrounds: Background[] = [
   { id: 2, url: bgImageUrl2, name: '背景2' },
 ]
 
-const LeftSidebar: React.FC<LeftSidebarProps> = ({
-  backgrounds,
-  onBackgroundSelect,
-}) => (
+const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSelect }) => (
   <div className="w-full h-full flex flex-col bg-white">
     <div className="p-4 border-b border-gray-200">
       <h3 className="text-sm font-semibold text-gray-800">背景一覧</h3>
@@ -68,11 +60,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
       <div className="grid grid-cols-1 gap-3">
         {backgrounds.map((bg) => (
           <div key={bg.id} onClick={() => onBackgroundSelect(bg.url)}>
-            <img
-              src={bg.url}
-              alt={bg.name}
-              className="w-full h-full object-cover"
-            />
+            <img src={bg.url} alt={bg.name} className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
@@ -103,9 +91,7 @@ export default function CreationPage() {
 
   const handlePlaceArtwork = (slot: Slot) => {
     if (selectedArtworkId !== null) {
-      const artworkToPlace = dummyArtworks.find(
-        (artwork) => artwork.id === selectedArtworkId,
-      )
+      const artworkToPlace = dummyArtworks.find((artwork) => artwork.id === selectedArtworkId)
       if (artworkToPlace) {
         setPlacements((prev) => ({ ...prev, [slot]: artworkToPlace }))
         setSelectedArtworkId(null)
@@ -115,26 +101,25 @@ export default function CreationPage() {
     }
   }
 
-const renderSlotContent = (slot: Slot) => {
-  const artwork = placements[slot]
-  if (artwork) {
-    return <FramedArtwork artwork={artwork} />
+  const renderSlotContent = (slot: Slot) => {
+    const artwork = placements[slot]
+    if (artwork) {
+      return <FramedArtwork artwork={artwork} />
+    }
+
+    const isSelected = selectedArtworkId !== null
+    return (
+      <div
+        className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
+          isSelected
+            ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
+            : 'bg-white/70 border-gray-400 hover:bg-gray-100'
+        }`}
+      >
+        <span className="text-sm font-bold text-gray-800">{slot}</span>
+      </div>
+    )
   }
-
-  const isSelected = selectedArtworkId !== null
-  return (
-    <div
-      className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
-        isSelected
-          ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
-          : 'bg-white/70 border-gray-400 hover:bg-gray-100'
-      }`}
-    >
-      <span className="text-sm font-bold text-gray-800">{slot}</span>
-    </div>
-  )
-}
-
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
@@ -197,11 +182,7 @@ const renderSlotContent = (slot: Slot) => {
                   left: '22%',
                 }}
               >
-                {placements.A ? (
-                  <FramedArtwork artwork={placements.A} />
-                ) : (
-                  renderSlotContent('A')
-                )}
+                {placements.A ? <FramedArtwork artwork={placements.A} /> : renderSlotContent('A')}
               </div>
 
               <div
@@ -214,11 +195,7 @@ const renderSlotContent = (slot: Slot) => {
                   left: '38%',
                 }}
               >
-                {placements.B ? (
-                  <FramedArtwork artwork={placements.B} />
-                ) : (
-                  renderSlotContent('B')
-                )}
+                {placements.B ? <FramedArtwork artwork={placements.B} /> : renderSlotContent('B')}
               </div>
 
               <div
@@ -231,11 +208,7 @@ const renderSlotContent = (slot: Slot) => {
                   right: '29%',
                 }}
               >
-                {placements.C ? (
-                  <FramedArtwork artwork={placements.C} />
-                ) : (
-                  renderSlotContent('C')
-                )}
+                {placements.C ? <FramedArtwork artwork={placements.C} /> : renderSlotContent('C')}
               </div>
             </div>
           </div>
