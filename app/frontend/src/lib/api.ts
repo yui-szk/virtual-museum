@@ -139,8 +139,35 @@ export async function postItem(body: { name: string }) {
 
 // ============ Museum API Functions ============
 
+// [GET] /api/v1/museums?exclude_user_id=1 (developブランチの既存実装)
+export async function fetchMuseumItems(userId: number) {
+  const res = await fetch(`${base}/api/v1/museums?excludeUserId=${userId}&limit=10`)
+  if (!res.ok) throw new Error(`Failed to fetch museums: ${res.status}`)
+  const json = await res.json()
+  const parsed = MuseumsSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid museums response: ${parsed.error.message}`)
+  }
+  return parsed.data.map(museum => ({
+    id: museum.id,
+    name: museum.name
+  }))
+}
+
+// [GET] /api/v1/museums/:museumId (developブランチの既存実装)
+export async function fetchMuseumItemById(museumId: number) {
+  const res = await fetch(`${base}/api/v1/museums/${museumId}`)
+  if (!res.ok) throw new Error(`Failed to fetch museum item: ${res.status}`)
+  const json = await res.json()
+  const parsed = MuseumSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid museum item response: ${parsed.error.message}`)
+  }
+  return parsed.data
+}
+
 /**
- * 公開ミュージアム取得（指定ユーザー以外）
+ * 公開ミュージアム取得（指定ユーザー以外） - 拡張版
  */
 export async function fetchPublicMuseums(excludeUserId: number, limit: number = 10): Promise<Museum[]> {
   const params = new URLSearchParams({
@@ -295,19 +322,3 @@ export async function healthCheck(): Promise<{ status: string }> {
   }
   return await res.json()
 }
-
-// ============ Legacy/Compatibility Functions ============
-
-/**
- * レガシー関数: fetchMuseumItems
- * TopPageとの互換性のため、fetchPublicMuseumsのエイリアスとして提供
- */
-export async function fetchMuseumItems(excludeUserId: number): Promise<Array<{ id: number; name: string }>> {
-  const museums = await fetchPublicMuseums(excludeUserId, 10)
-  // TopPageが期待する形式に変換
-  return museums.map(museum => ({
-    id: museum.id,
-    name: museum.name
-  }))
-}
-
