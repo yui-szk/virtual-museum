@@ -2,9 +2,9 @@ import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import TopPage from './components/TopPage'
 import MuseumScreen from './components/MuseumScreen'
-
 import CreationScreen from './components/CreationScreen'
 import MuseumMyListScreen from './components/MuseumMyListScreen'
+import ApiTestPage from './components/ApiTestPage'
 
 export default function App() {
   return (
@@ -18,6 +18,7 @@ export default function App() {
             <Route path="/view/:museumId" element={<MuseumScreen />} />
             <Route path="/museum/:museumId" element={<MuseumScreen />} />
             <Route path="/show" element={<MuseumMyListScreen />} />
+            <Route path="/api-test" element={<ApiTestPage />} />
           </Routes>
         </div>
       </BrowserRouter>
