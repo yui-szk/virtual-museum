@@ -12,12 +12,14 @@ const MuseumScreenMe = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
-      {/* Gallery View */}
+      <div className="w-full max-w-6xl mx-auto pt-6 px-4">
+        <a href="/" className="text-blue-600 hover:underline font-medium flex items-center gap-1">
+          &larr; 一覧へ戻る
+        </a>
+      </div>
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-6xl">
-          {/* Gallery Room Image */}
           <div className="relative bg-white rounded-lg shadow-2xs overflow-hidden">
-            {/* Gallery Wall with Frames */}
             <div className="relative bg-gradient-to-b from-white via-gray-50 to-gray-100 px-4 py-4 min-h-[400px]">
               <MuseumPicture imageUrl={imageUrl} />
             </div>
