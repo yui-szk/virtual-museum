@@ -39,3 +39,39 @@ export async function postItem(body: { name: string }) {
   return parsed.data
 }
 
+// [GET] /api/v1/museums?exclude_user_id=1
+export async function fetchMuseumItems(userId: number) {
+  const res = await fetch(`${base}/api/v1/museums?excludeUserId=${userId}&limit=10`)
+
+  if (!res.ok) throw new Error(`Failed to fetch museum items: ${res.status}`)
+  const json = await res.json()
+  const parsed = ItemsSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid museum items response: ${parsed.error.message}`)
+  }
+  return parsed.data
+}
+
+// [GET] /api/v1/museums/:museumId
+// Define MuseumSchema to match the structure you described
+export const MuseumSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  name: z.string(),
+  description: z.string(),
+  visibility: z.string(),
+  imageUrl: z.string(),
+  createdAt: z.string(),
+})
+
+export async function fetchMuseumItemById(museumId: number) {
+  const res = await fetch(`${base}/api/v1/museums/${museumId}`)
+
+  if (!res.ok) throw new Error(`Failed to fetch museum item: ${res.status}`)
+  const json = await res.json()
+  const parsed = MuseumSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid museum item response: ${parsed.error.message}`)
+  }
+  return parsed.data
+}

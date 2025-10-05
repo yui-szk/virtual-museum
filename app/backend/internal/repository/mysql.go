@@ -158,3 +158,4 @@ func (r *MySQLItemRepository) Create(name string) (domain.Item, error) {
 	}
 	return domain.Item{ID: int(id64), Name: name, CreatedAt: now}, nil
 }
+

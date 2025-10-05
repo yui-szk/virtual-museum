@@ -14,13 +14,13 @@ import (
 )
 
 // NewRouter configures chi router, CORS, and registers routes.
-func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService) http.Handler {
+func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService, museumSvc *service.MuseumService, artworkSearchSvc *service.ArtworkSearchService) http.Handler {
     r := chi.NewRouter()
 
     // CORS
     r.Use(cors.Handler(cors.Options{
         AllowedOrigins:   cfg.AllowedOrigins,
-        AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+        AllowedMethods:   []string{"GET", "POST", "PATCH", "OPTIONS"},
         AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
         ExposedHeaders:   []string{"Link"},
         AllowCredentials: false,
@@ -39,11 +39,11 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
         api.Get("/items", func(w http.ResponseWriter, r *http.Request) {
             items, err := itemSvc.List()
             if err != nil {
-                respondError(w, http.StatusInternalServerError, "failed to list items")
+                handlers.RespondError(w, http.StatusInternalServerError, "failed to list items")
                 log.Error("list items failed", slog.String("error", err.Error()))
                 return
             }
-            respondJSON(w, http.StatusOK, items)
+            handlers.RespondJSON(w, http.StatusOK, items)
         })
 
         // POST /items -> create with basic validation
@@ -54,15 +54,15 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
         api.Post("/items", func(w http.ResponseWriter, r *http.Request) {
             var req createReq
             if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-                respondError(w, http.StatusBadRequest, "invalid JSON body")
+                handlers.RespondError(w, http.StatusBadRequest, "invalid JSON body")
                 return
             }
             item, err := itemSvc.Create(req.Name)
             if err != nil {
-                respondError(w, http.StatusBadRequest, err.Error())
+                handlers.RespondError(w, http.StatusBadRequest, err.Error())
                 return
             }
-            respondJSON(w, http.StatusCreated, item)
+            handlers.RespondJSON(w, http.StatusCreated, item)
         })
 
         // Met API service and handler
@@ -71,18 +71,33 @@ func NewRouter(cfg config.Config, log *slog.Logger, itemSvc *service.ItemService
 
         // idから絵画情報取得
         api.Get("/met/objects/{id}", metHandler.GetObjectByID)
+
+        // Museum API
+        if museumSvc != nil {
+            museumHandler := handlers.NewMuseumHandler(log, museumSvc)
+            
+            // 1. 公開ミュージアム取得（自分以外）
+            api.Get("/museums", museumHandler.GetPublicMuseumsExceptUser)
+            
+            // 2. ミュージアム詳細取得
+            api.Get("/museums/{id}", museumHandler.GetMuseumByID)
+            
+            // 3. ミュージアムタイトル更新
+            api.Patch("/museums/{id}/title", museumHandler.UpdateTitle)
+            
+            // 4. ミュージアム作成
+            api.Post("/museums", museumHandler.Create)
+        }
+
+        // 5. 作品検索（MET API）
+        if artworkSearchSvc != nil {
+            searchHandler := handlers.NewArtworkSearchHandler(log, artworkSearchSvc)
+            api.Get("/search/artworks", searchHandler.SearchArtworks)
+        }
     })
 
     return r
 }
 
-func respondJSON(w http.ResponseWriter, status int, v any) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(status)
-    _ = json.NewEncoder(w).Encode(v)
-}
 
-func respondError(w http.ResponseWriter, status int, msg string) {
-    respondJSON(w, status, map[string]string{"error": msg})
-}
 
