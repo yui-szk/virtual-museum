@@ -93,6 +93,7 @@ export default function CreationPage() {
   }
 
   const handleGoBack = () => {
+    console.log('Navigating back to home page')
     navigate('/')
   }
 
@@ -141,14 +142,14 @@ export default function CreationPage() {
             />
           </div>
           {/* タイトル入力 */}
-          <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
+          <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4 relative z-40">
             <button
               onClick={handleGoBack}
-              className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow"
+              className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow cursor-pointer relative z-50"
             >
               戻る
             </button>
-            <div className="p-2 bg-white rounded-md shadow flex items-center gap-2">
+            <div className="p-2 bg-white rounded-md shadow flex items-center gap-2 relative z-50">
               <input
                 type="text"
                 className="w-60 text-gray-800 font-medium text-lg bg-transparent outline-none text-center placeholder-gray-400"
@@ -158,7 +159,7 @@ export default function CreationPage() {
                 onChange={(e) => setTitle(e.target.value)}
               />
               <button
-                className="p-1 rounded font-bold text-gray-800"
+                className="p-1 rounded font-bold text-gray-800 cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => setIsEditing(!isEditing)}
               >
                 <IconContext.Provider value={{ size: '1.5em' }}>
@@ -166,7 +167,7 @@ export default function CreationPage() {
                 </IconContext.Provider>
               </button>
             </div>
-            <button className="px-4 py-2 text-sm font-semibold text-white  rounded-md transition"></button>
+            <div className="w-16"></div>
           </div>
         </div>
 
@@ -196,7 +197,7 @@ export default function CreationPage() {
 
         {/* 選択中の美術品メッセージ */}
         {selectedArtwork !== null && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-base font-semibold px-4 py-2 rounded-full shadow-2xl z-50 animate-pulse">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-base font-semibold px-4 py-2 rounded-full shadow-2xl z-40 animate-pulse pointer-events-none">
             作品が選択されています！任意の場所をクリックして配置してください。
           </div>
         )}
