@@ -16,7 +16,7 @@ const MuseumScreen = () => {
         const contents = await fetchMuseumItemById(museumId)
         setTitle(contents.name)
         setImageUrl(
-          contents.imageUrl && contents.imageUrl.startsWith('http')
+          contents.imageUrl
             ? contents.imageUrl
             : 'https://placehold.jp/eeeeee/cccccc/330x200.png?text=No%20Image',
         )

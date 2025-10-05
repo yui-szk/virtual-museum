@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { IconContext } from 'react-icons'
 import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
@@ -72,6 +73,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSele
 // type Slot = 'A' | 'B' | 'C'
 
 export default function CreationPage() {
+  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
   const [currentBackground, setCurrentBackground] = useState<string>(bgImageUrl1)
@@ -84,43 +86,43 @@ export default function CreationPage() {
   //   C: null,
   // })
 
-  const [selectedArtworkId, setSelectedArtworkId] = useState<number | null>(null)
+  const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
 
   const handleBackgroundChange = (newUrl: string) => {
     setCurrentBackground(newUrl)
   }
 
-  // const handlePlaceArtwork = (slot: Slot) => {
-  //   if (selectedArtworkId !== null) {
-  //     const artworkToPlace = dummyArtworks.find((artwork) => artwork.id === selectedArtworkId)
-  //     if (artworkToPlace) {
-  //       setPlacements((prev) => ({ ...prev, [slot]: artworkToPlace }))
-  //       setSelectedArtworkId(null)
-  //     }
-  //   } else if (placements[slot]) {
-  //     setPlacements((prev) => ({ ...prev, [slot]: null }))
-  //   }
-  // }
+  const handlePlaceArtwork = (slot: Slot) => {
+    if (selectedArtwork !== null) {
+      setPlacements((prev) => ({ ...prev, [slot]: selectedArtwork }))
+      setSelectedArtwork(null)
+    } else if (placements[slot]) {
+      setPlacements((prev) => ({ ...prev, [slot]: null }))
+    }
+  }
 
-  // const renderSlotContent = (slot: Slot) => {
-  //   const artwork = placements[slot]
-  //   if (artwork) {
-  //     return <FramedArtwork artwork={artwork} />
-  //   }
+  const handleGoBack = () => {
+    navigate('/')
+  }
 
-  //   const isSelected = selectedArtworkId !== null
-  //   return (
-  //     <div
-  //       className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
-  //         isSelected
-  //           ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
-  //           : 'bg-white/70 border-gray-400 hover:bg-gray-100'
-  //       }`}
-  //     >
-  //       <span className="text-sm font-bold text-gray-800">{slot}</span>
-  //     </div>
-  //   )
-  // }
+  const renderSlotContent = (slot: Slot) => {
+    const artwork = placements[slot]
+    if (artwork) {
+      return <FramedArtwork artwork={artwork} />
+    }
+
+    const isSelected = selectedArtwork !== null
+    return (
+      <div
+        className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${isSelected
+          ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
+          : 'bg-white/70 border-gray-400 hover:bg-gray-100'
+          }`}
+      >
+        <span className="text-sm font-bold text-gray-800">{slot}</span>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
@@ -165,7 +167,10 @@ export default function CreationPage() {
           </div>
           {/* タイトル入力 */}
           <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
-            <button className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow">
+            <button
+              onClick={handleGoBack}
+              className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow"
+            >
               戻る
             </button>
             <div className="p-2 bg-white rounded-md shadow flex items-center gap-2">
@@ -192,21 +197,21 @@ export default function CreationPage() {
 
         {/* 右サイドバー */}
         <div
-          className={`relative flex-shrink-0 h-full transition-all duration-300 z-20 ${
-            isRightSidebarOpen ? 'w-72 border-l' : 'w-0'
-          }`}
+          className={`relative flex-shrink-0 self-stretch transition-all duration-300 z-20 ${isRightSidebarOpen ? 'w-72 border-l border-gray-200 bg-white shadow-sm' : 'w-0'
+            }`}
         >
           {isRightSidebarOpen && (
-            <RightSidebar
-              artworks={dummyArtworks}
-              onSelectArtwork={setSelectedArtworkId}
-              selectedArtworkId={selectedArtworkId}
-            />
+            <div className="h-full">
+              <RightSidebar
+                artworks={dummyArtworks}
+                onSelectArtwork={setSelectedArtwork}
+                selectedArtworkId={selectedArtwork?.id || null}
+              />
+            </div>
           )}
           <button
-            className={`absolute top-16 ${
-              isRightSidebarOpen ? 'left-0 -translate-x-full' : 'right-0'
-            } bg-white hover:bg-gray-100 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 
+            className={`absolute top-16 ${isRightSidebarOpen ? 'left-0 -translate-x-full' : 'right-0'
+              } bg-white hover:bg-gray-100 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 
               border border-gray-200 transition-all duration-200 shadow-md z-30`}
             onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
           >
@@ -215,7 +220,7 @@ export default function CreationPage() {
         </div>
 
         {/* 選択中の美術品メッセージ */}
-        {selectedArtworkId !== null && (
+        {selectedArtwork !== null && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-base font-semibold px-4 py-2 rounded-full shadow-2xl z-50 animate-pulse">
             作品が選択されています！任意の場所をクリックして配置してください。
           </div>
