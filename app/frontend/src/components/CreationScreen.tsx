@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import { IconContext } from 'react-icons'
 import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
+//! 背景画像のインポート（仮）
+import bgImageUrl1 from '../assets/museum-back-1.jpg'
+import bgImageUrl2 from '../assets/museum-back-2.jpg'
 
-import museumRoom from '../assets/museum-sample.jpg'
-
-const bgImageUrl: string = museumRoom
+//const bgImageUrl1: string = museumRoom1
+//const bgImageUrl2: string = museumRoom2
+const bgImageUrl: string = bgImageUrl1 // 初期背景画像
 
 interface Artwork {
   id: number
@@ -24,30 +27,39 @@ interface LeftSidebarProps {
   onBackgroundSelect: (url: string) => void
 }
 
-//?--------------------------------------------------------
-/*const dummyArtworks: Artwork[] = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  url: `https://placehold.co/100x100/F0F0F0/000000?text=作品+${i+1}`,
-  name: `作品 ${i + 1}`,
-}));*/
-//?--------------------------------------------------------
-const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP800045.jpg'
+//! 適当な美術品の読み込み
+const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP821127.jpg'
 
-const dummyArtworks: Artwork[] = [
+// 1. ベースID (821127) を数値として取得
+const baseIdNumber = 821127;
+const baseUrlPrefix = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP';
+const fileExtension = '.jpg';
+
+const dummyArtworks = [
   { id: 1, url: artworkImageUrl, name: '作品 1' },
   { id: 2, url: artworkImageUrl, name: '作品 2' },
   { id: 3, url: artworkImageUrl, name: '作品 3' },
-  // 残りの作品はプレースホルダーのまま
-  ...Array.from({ length: 7 }, (_, i) => ({
-    id: i + 4,
-    url: `https://placehold.co/100x100/F0F0F0/000000?text=作品+${i + 4}`,
-    name: `作品 ${i + 4}`,
-  })),
+  // 残りの作品
+  ...Array.from({ length: 7 }, (_, i) => {
+    // iは0から始まる
+    // 作品4 (i=0) は 821127 + (0 + 1) = 821128
+    // 作品5 (i=1) は 821127 + (1 + 1) = 821129
+    // 作品6 (i=2) は 821127 + (2 + 1) = 821130  <-- ここで桁が増えても正しく処理される
+    const newIdNumber = baseIdNumber + (i + 1);
+
+    return {
+      id: i + 4,
+      // プレフィックス、新しい数値ID、拡張子を結合して正しいURLを生成
+      url: `${baseUrlPrefix}${newIdNumber}${fileExtension}`,
+      name: `作品 ${i + 4}`,
+    };
+  }),
 ]
-// ... (dummyBackgrounds, LeftSidebar の定義はそのまま) ...
+
+// 背景画像の読み込み
 const dummyBackgrounds: Background[] = [
-  { id: 1, url: bgImageUrl, name: '背景1' },
-  { id: 2, url: bgImageUrl, name: '背景2' },
+  { id: 1, url: bgImageUrl1, name: '背景1' },
+  { id: 2, url: bgImageUrl2, name: '背景2' },
 ]
 
 const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSelect }) => (
