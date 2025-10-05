@@ -92,36 +92,8 @@ export default function CreationPage() {
     setCurrentBackground(newUrl)
   }
 
-  const handlePlaceArtwork = (slot: Slot) => {
-    if (selectedArtwork !== null) {
-      setPlacements((prev) => ({ ...prev, [slot]: selectedArtwork }))
-      setSelectedArtwork(null)
-    } else if (placements[slot]) {
-      setPlacements((prev) => ({ ...prev, [slot]: null }))
-    }
-  }
-
   const handleGoBack = () => {
     navigate('/')
-  }
-
-  const renderSlotContent = (slot: Slot) => {
-    const artwork = placements[slot]
-    if (artwork) {
-      return <FramedArtwork artwork={artwork} />
-    }
-
-    const isSelected = selectedArtwork !== null
-    return (
-      <div
-        className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${isSelected
-          ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
-          : 'bg-white/70 border-gray-400 hover:bg-gray-100'
-          }`}
-      >
-        <span className="text-sm font-bold text-gray-800">{slot}</span>
-      </div>
-    )
   }
 
   return (
@@ -163,7 +135,10 @@ export default function CreationPage() {
         <div className="flex-1 flex flex-col items-center p-3 relative">
           {/* ギャラリー表示 */}
           <div className="relative w-full max-w-5xl aspect-video rounded-lg">
-            <CanvasMerge background={currentBackground} selectedArtworkId={selectedArtworkId} />
+            <CanvasMerge
+              background={currentBackground}
+              selectedArtworkId={selectedArtwork?.id ?? null}
+            />
           </div>
           {/* タイトル入力 */}
           <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
@@ -197,8 +172,9 @@ export default function CreationPage() {
 
         {/* 右サイドバー */}
         <div
-          className={`relative flex-shrink-0 self-stretch transition-all duration-300 z-20 ${isRightSidebarOpen ? 'w-72 border-l border-gray-200 bg-white shadow-sm' : 'w-0'
-            }`}
+          className={`relative flex-shrink-0 self-stretch transition-all duration-300 z-20 ${
+            isRightSidebarOpen ? 'w-72 border-l border-gray-200 bg-white shadow-sm' : 'w-0'
+          }`}
         >
           {isRightSidebarOpen && (
             <div className="h-full">
@@ -210,8 +186,9 @@ export default function CreationPage() {
             </div>
           )}
           <button
-            className={`absolute top-16 ${isRightSidebarOpen ? 'left-0 -translate-x-full' : 'right-0'
-              } bg-white hover:bg-gray-100 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 
+            className={`absolute top-16 ${
+              isRightSidebarOpen ? 'left-0 -translate-x-full' : 'right-0'
+            } bg-white hover:bg-gray-100 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 
               border border-gray-200 transition-all duration-200 shadow-md z-30`}
             onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
           >
