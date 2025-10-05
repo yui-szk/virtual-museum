@@ -144,6 +144,8 @@ const CanvasMerge: React.FC<CanvasMergeProps> = ({ background, selectedArtworkId
     a.href = mergedUrl
     a.download = 'museum.jpg'
     a.click()
+
+    window.location.href = '/show'
   }
 
   return (
