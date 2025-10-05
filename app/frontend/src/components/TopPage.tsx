@@ -48,7 +48,7 @@ export default function TopPage() {
 
   // 新規作成ボタンが押された時の動作
   const handleNewCreationClick = () => {
-    handleNavigate('/create/new') //HACK: 仮のパス
+    handleNavigate('/create')
   }
 
   // 自分の部屋一覧ボタンが押された時の動作
