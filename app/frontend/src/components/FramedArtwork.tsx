@@ -7,7 +7,6 @@ interface Artwork {
   name: string
 }
 
-
 // 額縁付きの作品コンポーネント
 const FramedArtwork: React.FC<{ artwork: Artwork }> = ({ artwork }) => {
   return (
@@ -17,8 +16,7 @@ const FramedArtwork: React.FC<{ artwork: Artwork }> = ({ artwork }) => {
         alt={artwork.name}
         className="block max-h-[100%] max-w-[100%] object-contain"
         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-          e.currentTarget.src =
-            'https://placehold.co/200x200/990000/FFFFFF?text=Load+Error'
+          e.currentTarget.src = 'https://placehold.co/200x200/990000/FFFFFF?text=Load+Error'
         }}
       />
     </div>

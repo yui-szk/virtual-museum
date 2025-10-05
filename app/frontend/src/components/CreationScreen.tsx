@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import { IconContext } from 'react-icons'
 import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
-import FramedArtwork from './FramedArtwork'
-import bgImageUrl1 from '../assets/background/museum-back-1.jpg'
-import bgImageUrl2 from '../assets/background/museum-back-2.jpg'
+// import FramedArtwork from './FramedArtwork'
 import CanvasMerge from './CanvasMerge'
 
 interface Artwork {
@@ -46,6 +44,9 @@ const dummyArtworks: Artwork[] = [
   }),
 ]
 
+import bgImageUrl1 from '/src/assets/background/museum-back-1.jpg'
+import bgImageUrl2 from '/src/assets/background/museum-back-2.jpg'
+
 const dummyBackgrounds: Background[] = [
   { id: 1, url: bgImageUrl1, name: '背景1' },
   { id: 2, url: bgImageUrl2, name: '背景2' },
@@ -68,7 +69,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSele
   </div>
 )
 
-type Slot = 'A' | 'B' | 'C'
+// type Slot = 'A' | 'B' | 'C'
 
 export default function CreationPage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -77,11 +78,11 @@ export default function CreationPage() {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true)
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true)
 
-  const [placements, setPlacements] = useState<Record<Slot, Artwork | null>>({
-    A: null,
-    B: null,
-    C: null,
-  })
+  // const [placements, setPlacements] = useState<Record<Slot, Artwork | null>>({
+  //   A: null,
+  //   B: null,
+  //   C: null,
+  // })
 
   const [selectedArtworkId, setSelectedArtworkId] = useState<number | null>(null)
 
@@ -89,37 +90,37 @@ export default function CreationPage() {
     setCurrentBackground(newUrl)
   }
 
-  const handlePlaceArtwork = (slot: Slot) => {
-    if (selectedArtworkId !== null) {
-      const artworkToPlace = dummyArtworks.find((artwork) => artwork.id === selectedArtworkId)
-      if (artworkToPlace) {
-        setPlacements((prev) => ({ ...prev, [slot]: artworkToPlace }))
-        setSelectedArtworkId(null)
-      }
-    } else if (placements[slot]) {
-      setPlacements((prev) => ({ ...prev, [slot]: null }))
-    }
-  }
+  // const handlePlaceArtwork = (slot: Slot) => {
+  //   if (selectedArtworkId !== null) {
+  //     const artworkToPlace = dummyArtworks.find((artwork) => artwork.id === selectedArtworkId)
+  //     if (artworkToPlace) {
+  //       setPlacements((prev) => ({ ...prev, [slot]: artworkToPlace }))
+  //       setSelectedArtworkId(null)
+  //     }
+  //   } else if (placements[slot]) {
+  //     setPlacements((prev) => ({ ...prev, [slot]: null }))
+  //   }
+  // }
 
-  const renderSlotContent = (slot: Slot) => {
-    const artwork = placements[slot]
-    if (artwork) {
-      return <FramedArtwork artwork={artwork} />
-    }
+  // const renderSlotContent = (slot: Slot) => {
+  //   const artwork = placements[slot]
+  //   if (artwork) {
+  //     return <FramedArtwork artwork={artwork} />
+  //   }
 
-    const isSelected = selectedArtworkId !== null
-    return (
-      <div
-        className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
-          isSelected
-            ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
-            : 'bg-white/70 border-gray-400 hover:bg-gray-100'
-        }`}
-      >
-        <span className="text-sm font-bold text-gray-800">{slot}</span>
-      </div>
-    )
-  }
+  //   const isSelected = selectedArtworkId !== null
+  //   return (
+  //     <div
+  //       className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
+  //         isSelected
+  //           ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
+  //           : 'bg-white/70 border-gray-400 hover:bg-gray-100'
+  //       }`}
+  //     >
+  //       <span className="text-sm font-bold text-gray-800">{slot}</span>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
@@ -157,62 +158,11 @@ export default function CreationPage() {
         )}
 
         {/* 中央コンテンツ */}
-        <div className="flex-1 flex flex-col items-center p-3 relative overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center p-3 relative">
           {/* ギャラリー表示 */}
-          <div className="relative w-full max-w-5xl aspect-video bg-gray-200 rounded-xl shadow-2xl overflow-hidden">
-            <img
-              src={currentBackground}
-              alt="Museum Background"
-              className="w-full h-full object-cover"
-              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                e.currentTarget.src =
-                  'https://placehold.co/1200x675/990000/FFFFFF?text=Background+Load+Error'
-              }}
-            />
-
-            {/* 配置スロット */}
-            <div className="absolute inset-0">
-              <div
-                onClick={() => handlePlaceArtwork('A')}
-                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
-                style={{
-                  width: '12%',
-                  height: '25%',
-                  top: '51%',
-                  left: '22%',
-                }}
-              >
-                {placements.A ? <FramedArtwork artwork={placements.A} /> : renderSlotContent('A')}
-              </div>
-
-              <div
-                onClick={() => handlePlaceArtwork('B')}
-                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
-                style={{
-                  width: '18%',
-                  height: '26%',
-                  top: '49%',
-                  left: '38%',
-                }}
-              >
-                {placements.B ? <FramedArtwork artwork={placements.B} /> : renderSlotContent('B')}
-              </div>
-
-              <div
-                onClick={() => handlePlaceArtwork('C')}
-                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
-                style={{
-                  width: '12%',
-                  height: '25%',
-                  top: '52%',
-                  right: '29%',
-                }}
-              >
-                {placements.C ? <FramedArtwork artwork={placements.C} /> : renderSlotContent('C')}
-              </div>
-            </div>
+          <div className="relative w-full max-w-5xl aspect-video rounded-lg">
+            <CanvasMerge background={currentBackground} selectedArtworkId={selectedArtworkId} />
           </div>
-
           {/* タイトル入力 */}
           <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
             <button className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow">
@@ -236,9 +186,7 @@ export default function CreationPage() {
                 </IconContext.Provider>
               </button>
             </div>
-            <button className="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 transition shadow">
-              完了
-            </button>
+            <button className="px-4 py-2 text-sm font-semibold text-white  rounded-md transition"></button>
           </div>
         </div>
 
