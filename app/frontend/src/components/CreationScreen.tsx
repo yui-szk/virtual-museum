@@ -4,13 +4,10 @@ import { IconContext } from 'react-icons'
 import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
 //! 背景画像のインポート（仮）
-import bgImageUrl1 from '../assets/museum-back-1.jpg'
-import bgImageUrl2 from '../assets/museum-back-2.jpg'
+import bgImageUrl1 from '../assets/background/museum-back-1.jpg'
+import bgImageUrl2 from '../assets//background/museum-back-2.jpg'
 
-//const bgImageUrl1: string = museumRoom1
-//const bgImageUrl2: string = museumRoom2
 const bgImageUrl: string = bgImageUrl1 // 初期背景画像
-
 
 interface Artwork {
   id: number
@@ -34,9 +31,9 @@ interface LeftSidebarProps {
 const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP821127.jpg'
 
 // 1. ベースID (821127) を数値として取得
-const baseIdNumber = 821127;
-const baseUrlPrefix = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP';
-const fileExtension = '.jpg';
+const baseIdNumber = 821127
+const baseUrlPrefix = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP'
+const fileExtension = '.jpg'
 
 const dummyArtworks = [
   { id: 1, url: artworkImageUrl, name: '作品 1' },
@@ -48,25 +45,22 @@ const dummyArtworks = [
     // 作品4 (i=0) は 821127 + (0 + 1) = 821128
     // 作品5 (i=1) は 821127 + (1 + 1) = 821129
     // 作品6 (i=2) は 821127 + (2 + 1) = 821130  <-- ここで桁が増えても正しく処理される
-    const newIdNumber = baseIdNumber + (i + 1);
-
+    const newIdNumber = baseIdNumber + (i + 1)
 
     return {
       id: i + 4,
       // プレフィックス、新しい数値ID、拡張子を結合して正しいURLを生成
       url: `${baseUrlPrefix}${newIdNumber}${fileExtension}`,
       name: `作品 ${i + 4}`,
-    };
+    }
   }),
 ]
 
 // 背景画像の読み込み
 const dummyBackgrounds: Background[] = [
-
   { id: 1, url: bgImageUrl1, name: '背景1' },
   { id: 2, url: bgImageUrl2, name: '背景2' },
 ]
-
 
 const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSelect }) => (
   <div className="w-full h-full flex flex-col bg-white">
@@ -84,7 +78,6 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSele
     </div>
   </div>
 )
-
 
 export default function CreationPage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -109,7 +102,6 @@ export default function CreationPage() {
     setCurrentBackground(newUrl)
   }
 
-
   const handlePlaceArtwork = (slot: 'A' | 'B' | 'C') => {
     if (selectedArtworkId !== null) {
       setPlacements((prev) => ({ ...prev, [slot]: selectedArtworkId }))
@@ -119,12 +111,10 @@ export default function CreationPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
-
       {/* 画面タイトル */}
       <header className="flex-shrink-0 p-3 bg-white border-b border-gray-200">
         <h1 className="text-lg font-semibold text-gray-800">新規作成</h1>
       </header>
-
 
       {/* メインレイアウト */}
       <div className="flex flex-1 overflow-hidden">
@@ -202,7 +192,6 @@ export default function CreationPage() {
                   top: '52%',
                   right: '34.5%',
                 }}
-
               >
                 {placements['C'] ?? 'C'}
               </div>
@@ -264,7 +253,6 @@ export default function CreationPage() {
           </button>
         )}
       </div>
-
     </div>
   )
 }
