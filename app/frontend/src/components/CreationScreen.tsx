@@ -137,7 +137,7 @@ export default function CreationPage() {
           <div className="relative w-full max-w-5xl aspect-video rounded-lg">
             <CanvasMerge
               background={currentBackground}
-              selectedArtworkId={selectedArtwork?.id ?? null}
+              selectedArtwork={selectedArtwork}
             />
           </div>
           {/* タイトル入力 */}
@@ -172,9 +172,8 @@ export default function CreationPage() {
 
         {/* 右サイドバー */}
         <div
-          className={`relative flex-shrink-0 self-stretch transition-all duration-300 z-20 ${
-            isRightSidebarOpen ? 'w-72 border-l border-gray-200 bg-white shadow-sm' : 'w-0'
-          }`}
+          className={`relative flex-shrink-0 self-stretch transition-all duration-300 z-20 ${isRightSidebarOpen ? 'w-72 border-l border-gray-200 bg-white shadow-sm' : 'w-0'
+            }`}
         >
           {isRightSidebarOpen && (
             <div className="h-full">
@@ -186,9 +185,8 @@ export default function CreationPage() {
             </div>
           )}
           <button
-            className={`absolute top-16 ${
-              isRightSidebarOpen ? 'left-0 -translate-x-full' : 'right-0'
-            } bg-white hover:bg-gray-100 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 
+            className={`absolute top-16 ${isRightSidebarOpen ? 'left-0 -translate-x-full' : 'right-0'
+              } bg-white hover:bg-gray-100 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 
               border border-gray-200 transition-all duration-200 shadow-md z-30`}
             onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
           >

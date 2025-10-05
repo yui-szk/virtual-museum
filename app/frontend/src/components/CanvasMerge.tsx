@@ -39,10 +39,10 @@ type Slot = 'A' | 'B' | 'C'
 
 interface CanvasMergeProps {
   background: string
-  selectedArtworkId: number | null
+  selectedArtwork: Artwork | null
 }
 
-const CanvasMerge: React.FC<CanvasMergeProps> = ({ background, selectedArtworkId }) => {
+const CanvasMerge: React.FC<CanvasMergeProps> = ({ background, selectedArtwork }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [mergedUrl, setMergedUrl] = useState<string | null>(null)
   const [placements, setPlacements] = useState<Record<Slot, Artwork | null>>({
@@ -52,11 +52,8 @@ const CanvasMerge: React.FC<CanvasMergeProps> = ({ background, selectedArtworkId
   })
 
   const handlePlaceArtwork = (slot: Slot) => {
-    if (selectedArtworkId !== null) {
-      const artworkToPlace = dummyArtworks.find((artwork) => artwork.id === selectedArtworkId)
-      if (artworkToPlace) {
-        setPlacements((prev) => ({ ...prev, [slot]: artworkToPlace }))
-      }
+    if (selectedArtwork !== null) {
+      setPlacements((prev) => ({ ...prev, [slot]: selectedArtwork }))
     } else if (placements[slot]) {
       setPlacements((prev) => ({ ...prev, [slot]: null }))
     }
@@ -68,7 +65,7 @@ const CanvasMerge: React.FC<CanvasMergeProps> = ({ background, selectedArtworkId
       return <FramedArtwork artwork={artwork} />
     }
 
-    const isSelected = selectedArtworkId !== null
+    const isSelected = selectedArtwork !== null
     return (
       <div
         className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${
@@ -125,6 +122,11 @@ const CanvasMerge: React.FC<CanvasMergeProps> = ({ background, selectedArtworkId
                 const w = canvas.width * cfg.width
                 const h = canvas.height * cfg.height
                 ctx.drawImage(img, x, y, w, h)
+                setMergedUrl(canvas.toDataURL('image/png'))
+              }
+              img.onerror = () => {
+                console.error(`Failed to load artwork image: ${artwork.url}`)
+                // Still update the merged URL even if artwork image fails to load
                 setMergedUrl(canvas.toDataURL('image/png'))
               }
             }
