@@ -1,28 +1,26 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import TopPage from './components/TopPage'; 
-import MuseumScreen from "./components/MuseumScreen";
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import TopPage from './components/TopPage'
+import MuseumScreen from './components/MuseumScreen'
 
-import CreationScreen from "./components/CreationScreen";
-import MuseumMyListScreen from "./components/MuseumMyListScreen";
-
+import CreationScreen from './components/CreationScreen'
+import MuseumMyListScreen from './components/MuseumMyListScreen'
 
 export default function App() {
   return (
     <>
       <BrowserRouter>
         <div className="min-h-screen bg-gradient-to-b overflow-y-hidden from-gray-50 to-gray-100 flex flex-col items-center justify-center">
-            <Routes>
+          <Routes>
             <Route path="/" element={<TopPage />} />
-
             <Route path="/view" element={<MuseumScreen />} />
             <Route path="/create" element={<CreationScreen />} />
             <Route path="/view/:museumId" element={<MuseumScreen />} />
+            <Route path="/museum/:museumId" element={<MuseumScreen />} />
             <Route path="/show" element={<MuseumMyListScreen />} />
-            </Routes>
-
+          </Routes>
         </div>
       </BrowserRouter>
     </>
-  );
+  )
 }
