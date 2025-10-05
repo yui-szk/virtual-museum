@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"math/rand"
+	"time"
 
 	"backend/internal/domain"
 	"backend/internal/repository"
@@ -19,7 +21,7 @@ func NewMuseumService(repo repository.MuseumRepository) *MuseumService {
 	return &MuseumService{repo: repo}
 }
 
-// GetOtherUsersPublicMuseums は指定ユーザー以外の公開ミュージアムを取得する
+// GetOtherUsersPublicMuseums は指定ユーザー以外の公開ミュージアムを取得する（ランダム並び替え）
 func (s *MuseumService) GetOtherUsersPublicMuseums(excludeUserID int, limit int) ([]domain.MuseumResponse, error) {
 	if excludeUserID <= 0 {
 		return nil, errors.New("invalid user ID")
@@ -37,6 +39,12 @@ func (s *MuseumService) GetOtherUsersPublicMuseums(excludeUserID int, limit int)
 	for i, museum := range museums {
 		responses[i] = museum.ToResponse()
 	}
+
+	// ランダムに並び替え
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(responses), func(i, j int) {
+		responses[i], responses[j] = responses[j], responses[i]
+	})
 
 	return responses, nil
 }
