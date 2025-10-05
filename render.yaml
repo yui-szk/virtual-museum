@@ -1,0 +1,55 @@
+services:
+  - type: web
+    name: backend
+    runtime: docker
+    dockerfilePath: app/backend/Dockerfile
+    plan: free
+    # 必要に応じて追加: healthCheckPath: /healthz
+    envVars:
+      - key: DB_HOST
+        value: mysql
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_USER
+        value: app
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        value: appdb
+
+  - type: web
+    name: frontend
+    runtime: static
+    plan: free
+    buildCommand: |
+      cd app/frontend
+      npm ci
+      npm run build
+    staticPublishPath: app/frontend/dist
+    routes:
+      - type: rewrite
+        source: /**/*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://backend.onrender.com
+
+  - type: pserv
+    name: mysql
+    runtime: docker
+    plan: starter
+    image:
+      url: docker.io/mysql:8.4
+    disk:
+      name: mysqldata
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - key: MYSQL_DATABASE
+        value: appdb
+      - key: MYSQL_USER
+        value: app
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
