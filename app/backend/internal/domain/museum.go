@@ -23,10 +23,24 @@ type Museum struct {
 
 // MuseumCreateRequest represents the request payload for creating a museum.
 type MuseumCreateRequest struct {
+    UserID      int            `json:"userId"`
     Name        string         `json:"name"`
     Description string         `json:"description"`
     Visibility  VisibilityType `json:"visibility"`
     ImageURL    string         `json:"imageUrl"`
+}
+
+// MuseumTitleUpdateRequest represents the request payload for updating museum title.
+type MuseumTitleUpdateRequest struct {
+    Title string `json:"title"`
+}
+
+// ArtworkSearchQuery represents search parameters for artwork search.
+type ArtworkSearchQuery struct {
+    IsHighlight *bool  `json:"isHighlight,omitempty"`
+    ObjectDate  string `json:"objectDate,omitempty"`
+    City        string `json:"city,omitempty"`
+    Medium      string `json:"medium,omitempty"`
 }
 
 // MuseumUpdateRequest represents the request payload for updating a museum.

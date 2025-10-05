@@ -1,13 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 
 	"backend/internal/service"
 )
@@ -23,9 +19,8 @@ func NewMetHandler(log *slog.Logger, metSvc *service.MetService) *MetHandler {
 
 // GET /api/v1/met/objects/{id}
 func (h *MetHandler) GetObjectByID(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil || id <= 0 {
+	id, err := parsePositiveIntParam(r, "id")
+	if err != nil {
 		respondError(w, http.StatusBadRequest, "invalid id")
 		return
 	}
@@ -43,12 +38,3 @@ func (h *MetHandler) GetObjectByID(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, obj)
 }
 
-func respondJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(v)
-}
-
-func respondError(w http.ResponseWriter, status int, msg string) {
-	respondJSON(w, status, map[string]string{"error": msg})
-}
