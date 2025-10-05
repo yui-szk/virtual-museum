@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react'
 import MuseumPicture from './MuseumPicture'
 import { fetchMuseumItemById } from '../lib/api'
 
-// HACK: 仮の画像URL
-import museumImage from '../assets/museums/museum-1.jpg';
-// const [museumImage, setMuseumImage] = useState<string>('');
-
 const MuseumScreen = () => {
   const [title, setTitle] = useState('美術館のタイトル')
   const [imageUrl, setImageUrl] = useState(
@@ -29,9 +25,6 @@ const MuseumScreen = () => {
     loadContents()
   }, [])
 
-  // HACK: 仮タイトル
-  title === '' && setTitle(museumItem.title);
-
   // HACK: 仮のAPIエンドポイント
   // useEffect(() => {
   //   fetch('/api/museum/image')
@@ -42,14 +35,14 @@ const MuseumScreen = () => {
 
   return (
     <div className="min-h-screen max-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
-        <div className="w-full max-w-6xl mx-auto pt-6 px-4">
-          <a
-            href="/show"
-            className="text-blue-600 hover:underline font-medium flex items-center gap-1"
-          >
-            &larr; 一覧へ戻る
-          </a>
-        </div>
+      <div className="w-full max-w-6xl mx-auto pt-6 px-4">
+        <a
+          href="/show"
+          className="text-blue-600 hover:underline font-medium flex items-center gap-1"
+        >
+          &larr; 一覧へ戻る
+        </a>
+      </div>
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-6xl">
           {/* Gallery Room Image */}
@@ -69,8 +62,6 @@ const MuseumScreen = () => {
             </div>
           </div>
         </div>
-        </div>
-      </div>
       </div>
     </div>
   )
