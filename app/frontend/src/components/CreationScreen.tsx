@@ -1,186 +1,258 @@
-import React, { useState } from 'react';
-// アイコンとコンテキストをインポート
+import React, { useState } from 'react'
+
 import { IconContext } from 'react-icons'
-import { MdOutlineEdit, MdOutlineCheck } from "react-icons/md";
-// ギャラリーの画像コンポーネントをインポート
-import MuseumPicture from './MuseumPicture';
+import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
+import RightSidebar from './RightSidebar'
+//! 背景画像のインポート（仮）
+import bgImageUrl1 from '../assets/background/museum-back-1.jpg'
+import bgImageUrl2 from '../assets//background/museum-back-2.jpg'
 
-// 画像をJavaScriptモジュールとしてインポートする
-//! 本当は背景画像のURLを取得する必要あり 
-import museumRoom from "../assets/museum-sample.jpg";
+const bgImageUrl: string = bgImageUrl1 // 初期背景画像
 
-const bgImageUrl: string = museumRoom;
-
-//* 美術品（将来的にAPIから取得）
 interface Artwork {
-  id: number;
-  url: string;
-  name: string;
+  id: number
+  url: string
+  name: string
 }
-//* 背景（将来的にAPIから取得）
+
 interface Background {
-  id: number;
-  url: string;
-  name: string;
+  id: number
+  url: string
+  name: string
 }
 
 interface LeftSidebarProps {
-  backgrounds: Background[];
-  onBackgroundSelect: (url: string) => void; // URLを受け取る関数
+  backgrounds: Background[]
+
+  onBackgroundSelect: (url: string) => void
 }
 
-// ダミーデータ（右サイドバー用）
-const dummyArtworks: Artwork[] = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  url: `https://placehold.co/100x100/F0F0F0/000000?text=作品+${i+1}`,
-  name: `作品 ${i + 1}`,
-}));
+//! 適当な美術品の読み込み
+const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP821127.jpg'
 
-// ダミーの背景データ（左サイドバー用）
+// 1. ベースID (821127) を数値として取得
+const baseIdNumber = 821127
+const baseUrlPrefix = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP'
+const fileExtension = '.jpg'
+
+const dummyArtworks = [
+  { id: 1, url: artworkImageUrl, name: '作品 1' },
+  { id: 2, url: artworkImageUrl, name: '作品 2' },
+  { id: 3, url: artworkImageUrl, name: '作品 3' },
+  // 残りの作品
+  ...Array.from({ length: 7 }, (_, i) => {
+    // iは0から始まる
+    // 作品4 (i=0) は 821127 + (0 + 1) = 821128
+    // 作品5 (i=1) は 821127 + (1 + 1) = 821129
+    // 作品6 (i=2) は 821127 + (2 + 1) = 821130  <-- ここで桁が増えても正しく処理される
+    const newIdNumber = baseIdNumber + (i + 1)
+
+    return {
+      id: i + 4,
+      // プレフィックス、新しい数値ID、拡張子を結合して正しいURLを生成
+      url: `${baseUrlPrefix}${newIdNumber}${fileExtension}`,
+      name: `作品 ${i + 4}`,
+    }
+  }),
+]
+
+// 背景画像の読み込み
 const dummyBackgrounds: Background[] = [
-  { id: 1, url: bgImageUrl, name: '背景1' },
-  { id: 2, url: bgImageUrl, name: '背景2' },
-];
+  { id: 1, url: bgImageUrl1, name: '背景1' },
+  { id: 2, url: bgImageUrl2, name: '背景2' },
+]
 
-
-//! 右側の美術品リストコンポーネント (パディング p-1 に縮小済み)
-const RightSidebar: React.FC<{ artworks: Artwork[] }> = ({ artworks }) => (
-  <div className="w-64 flex-shrink-0 bg-gray-100 border-l border-gray-300 overflow-y-auto p-1">
-    <h3 className="text-sm font-semibold mb-1 text-gray-700">美術品一覧</h3>
-    <div className="grid grid-cols-2 gap-1">
-      {artworks.map((art) => (
-        <div
-          key={art.id}
-          className="aspect-square bg-white border border-gray-400 cursor-grab rounded-sm overflow-hidden shadow-sm flex items-center justify-center text-xs"
-        >
-          {/* ダミーデータなので、画像ではなくIDを表示 */}
-          ?? {art.id}
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-//* 左側の背景リストコンポーネント (パディング p-1 に縮小済み)
 const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSelect }) => (
-  <div className="w-40 flex-shrink-0 bg-gray-100 border-r border-gray-300 overflow-y-auto p-1">
-    <h3 className="text-sm font-semibold mb-1 text-gray-700">背景</h3>
-    <div className="space-y-1">
-      {backgrounds.map((bg) => (
-        <div key={bg.id} className="cursor-pointer" onClick={() => onBackgroundSelect(bg.url)}>
-          <p className="text-xs text-gray-600 mb-1">{bg.name}</p>
-          <div className="w-full h-16 border border-gray-400 rounded-sm overflow-hidden shadow-sm">
+  <div className="w-full h-full flex flex-col bg-white">
+    <div className="p-4 border-b border-gray-200">
+      <h3 className="text-sm font-semibold text-gray-800">背景一覧</h3>
+    </div>
+    <div className="flex-1 p-4 overflow-y-auto">
+      <div className="grid grid-cols-1 gap-3">
+        {backgrounds.map((bg) => (
+          <div key={bg.id} onClick={() => onBackgroundSelect(bg.url)}>
             <img src={bg.url} alt={bg.name} className="w-full h-full object-cover" />
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   </div>
-);
+)
 
-
-//* メインの作成画面コンポーネント
 export default function CreationPage() {
-  // MuseumScreenから移植したロジック
-  const [isEditing, setIsEditing] = useState(false); // タイトル編集の状態
-  const [title, setTitle] = useState(''); // タイトル
-  const [currentBackground, setCurrentBackground] = useState<string>(bgImageUrl); // 背景URL
+  const [isEditing, setIsEditing] = useState(false)
+  const [title, setTitle] = useState('')
+  const [currentBackground, setCurrentBackground] = useState<string>(bgImageUrl)
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true)
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true)
 
-  //! 背景変更ハンドラー関数を定義
-  // 左バーの背景を押したら真ん中の画像のURLを変更する
+  // 新しく追加
+  const [selectedArtworkId, setSelectedArtworkId] = useState<number | null>(null)
+  const [placements, setPlacements] = useState<{
+    A: number | null
+    B: number | null
+    C: number | null
+  }>({
+    A: null,
+    B: null,
+    C: null,
+  })
+
   const handleBackgroundChange = (newUrl: string) => {
-    setCurrentBackground(newUrl);
-  };
+    setCurrentBackground(newUrl)
+  }
+
+  const handlePlaceArtwork = (slot: 'A' | 'B' | 'C') => {
+    if (selectedArtworkId !== null) {
+      setPlacements((prev) => ({ ...prev, [slot]: selectedArtworkId }))
+      setSelectedArtworkId(null) // 配置後に選択解除したい場合
+    }
+  }
 
   return (
-    // 画面全体を覆うコンテナ (Flexboxを適用)
-    <div className="flex flex-col h-screen overflow-hidden">
-
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
       {/* 画面タイトル */}
       <header className="flex-shrink-0 p-3 bg-white border-b border-gray-200">
         <h1 className="text-lg font-semibold text-gray-800">新規作成</h1>
       </header>
 
-      {/* メインレイアウト: 左サイドバー + 中央 + 右サイドバー */}
-      <main className="flex flex-1 overflow-hidden">
+      {/* メインレイアウト */}
+      <div className="flex flex-1 overflow-hidden">
+        {isLeftSidebarOpen && (
+          <div className="relative w-64 bg-white border-r border-gray-200 flex-shrink-0 shadow-sm transition-all duration-300 z-20">
+            <button
+              className="absolute top-4 right-0 translate-x-full bg-white hover:bg-gray-50 rounded-r-lg px-2 py-3 text-gray-600 hover:text-gray-900 border border-l-0 border-gray-200 transition-all duration-200 z-10"
+              onClick={() => setIsLeftSidebarOpen(false)}
+            >
+              <MdArrowBackIos />
+            </button>
 
-      {/* 左サイドバー: 背景画像一覧 */}
-      {/* 選択したら真ん中の画像に反映 */}
-      <LeftSidebar
-        backgrounds={dummyBackgrounds}
-        onBackgroundSelect={handleBackgroundChange}
-      />
-        {/* 中央の絵を配置する */}
-        <div className="flex-1 flex flex-col items-center p-0 relative overflow-y-auto bg-gray-200">
+            <LeftSidebar
+              backgrounds={dummyBackgrounds}
+              onBackgroundSelect={handleBackgroundChange}
+            />
+          </div>
+        )}
 
-          {/* Gallery View - 画像コンテナ */}
-          <div className="w-full max-w-6xl flex flex-col justify-center items-center relative my-4">
-            {/* 背景画像と MuseumPicture を重ねるコンテナ */}
-            <div className="relative w-full overflow-hidden flex justify-center items-center aspect-video">
+        {!isLeftSidebarOpen && (
+          <button
+            className="absolute top-16 left-0 bg-white hover:bg-gray-50 rounded-r-lg px-2 py-3 text-gray-600 hover:text-gray-900 shadow-md border border-l-0 border-gray-200 transition-all duration-200 z-30"
+            onClick={() => setIsLeftSidebarOpen(true)}
+          >
+            <MdArrowForwardIos />
+          </button>
+        )}
 
-              {/* 中央の背景画像 */}
-              <img
-                src={currentBackground}
-                alt="Museum Background"
-                className="w-full h-full object-contain"
+        {/* 中央 */}
+        <div className="flex-1 flex flex-col items-center p-3 relative overflow-y-auto max-h-[calc(100vh-12rem)]">
+          <div className="relative w-full overflow-hidden flex justify-center items-center aspect-video">
+            <img
+              src={currentBackground}
+              alt="Museum Background"
+              className="w-full h-full object-contain"
+            />
+
+            {/* 配置スロット (A, B, C) - Adjusted for image alignment */}
+            <div className="absolute inset-0">
+              <div
+                onClick={() => handlePlaceArtwork('A')}
+                className="absolute top-[15%] left-[17%] w-[20%] h-[40%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
+                style={{
+                  // More precise positioning relative to the left artwork
+                  width: '7%',
+                  height: '17%',
+                  top: '51%',
+                  left: '31%',
+                }}
+              >
+                {placements['A'] ?? 'A'}
+              </div>
+              {/* Slot B: Positioned over the center largest artwork */}
+              <div
+                onClick={() => handlePlaceArtwork('B')}
+                className="absolute top-[10%] left-[40%] w-[25%] h-[50%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
+                style={{
+                  // More precise positioning relative to the center artwork
+                  width: '12%',
+                  height: '20%',
+                  top: '49%',
+                  left: '42%',
+                }}
+              >
+                {placements['B'] ?? 'B'}
+              </div>
+              {/* Slot C: Positioned over the right inner artwork */}
+              <div
+                onClick={() => handlePlaceArtwork('C')}
+                className="absolute top-[15%] right-[10%] w-[25%] h-[40%] flex items-center justify-center bg-white/70 rounded cursor-pointer"
+                style={{
+                  // More precise positioning relative to the right artwork
+                  width: '8%',
+                  height: '16%',
+                  top: '52%',
+                  right: '34.5%',
+                }}
+              >
+                {placements['C'] ?? 'C'}
+              </div>
+            </div>
+          </div>
+          {/* タイトル入力欄 */}
+          <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
+            <button className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow">
+              戻る
+            </button>
+            <div className="p-2 bg-white rounded-md shadow flex items-center gap-2">
+              <input
+                type="text"
+                className="w-60 text-gray-800 font-medium text-lg bg-transparent outline-none text-center placeholder-gray-400"
+                value={title}
+                placeholder="タイトル"
+                readOnly={!isEditing}
+                onChange={(e) => setTitle(e.target.value)}
               />
-
-              {/* Gallery Wall with Frames / MuseumPicture の部分 - 画像に重ねて表示 */}
-              <div className="absolute inset-0">
-                <MuseumPicture />
-              </div>
-            </div>
-            {/* 修正: Bottom Controls - タイトル入力欄、「戻る」「完了」ボタンを配置 */}
-            <div className="flex justify-between items-end w-full max-w-xl mt-4 mb-4">
-              
-              {/* 1. 左下に「戻る」ボタンを配置 */}
-              <button 
-                className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow"
-                // onClick={handleBack} //!戻る処理の記述
+              <button
+                className="p-1 rounded font-bold text-gray-800"
+                onClick={() => setIsEditing(!isEditing)}
               >
-                戻る
-              </button>
-
-              {/* 2. 中央にタイトル入力欄を配置 */}
-              <div className="p-2 bg-white rounded-md shadow flex items-center gap-2">
-                <input
-                  type="text"
-                  className="w-60 text-gray-800 font-medium text-lg bg-transparent outline-none text-center placeholder-gray-400"
-                  value={title}
-                  placeholder='タイトル'
-                  readOnly={!isEditing}
-                  onChange={e => setTitle(e.target.value)}
-                />
-                {/* 編集/保存ボタン */}
-                <button
-                  className="p-1 rounded font-bold text-gray-800"
-                  onClick={() => setIsEditing(!isEditing)} //! 編集
-                >
-                  <IconContext.Provider value={{ size: '1.5em' }}>
-                    {isEditing ? (
-                      <MdOutlineCheck />
-                    ) : (
-                      <MdOutlineEdit />
-                    )}
-                  </IconContext.Provider>
-                </button>
-              </div>
-
-              {/* 3. 右下に「完了」ボタンを配置 */}
-              <button 
-                className="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 transition shadow"
-                // onClick={handleComplete} 完了処理を実装する場合はここに
-              >
-                完了
+                <IconContext.Provider value={{ size: '1.5em' }}>
+                  {isEditing ? <MdOutlineCheck /> : <MdOutlineEdit />}
+                </IconContext.Provider>
               </button>
             </div>
+            <button className="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 transition shadow">
+              完了
+            </button>
           </div>
         </div>
 
-        {/* 右サイドバー: 美術品一覧 */}
-        <RightSidebar artworks={dummyArtworks} />
-      </main>
+        {/* 右サイドバー */}
+        {isRightSidebarOpen && (
+          <div className="relative w-72 bg-white border-l border-gray-200 flex-shrink-0 shadow-lg transition-all duration-300">
+            <button
+              className="absolute top-4 left-0 -translate-x-full bg-white hover:bg-gray-50 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 shadow-md border border-r-0 border-gray-200 transition-all duration-200"
+              onClick={() => setIsRightSidebarOpen(false)}
+            >
+              <MdArrowForwardIos />
+            </button>
 
+            <RightSidebar
+              artworks={dummyArtworks}
+              onSelectArtwork={setSelectedArtworkId}
+              selectedArtworkId={selectedArtworkId}
+            />
+          </div>
+        )}
+
+        {!isRightSidebarOpen && (
+          <button
+            className="absolute top-16 right-0 bg-white hover:bg-gray-50 rounded-l-lg px-2 py-3 text-gray-600 hover:text-gray-900 shadow-md border border-r-0 border-gray-200 transition-all duration-200"
+            onClick={() => setIsRightSidebarOpen(true)}
+          >
+            <MdArrowBackIos />
+          </button>
+        )}
+      </div>
     </div>
-  );
+  )
 }

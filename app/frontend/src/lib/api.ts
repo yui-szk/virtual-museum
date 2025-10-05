@@ -3,8 +3,79 @@ import { ItemSchema } from './types'
 
 const ItemsSchema = z.array(ItemSchema)
 
-// Museum related schemas
-const MuseumSchema = z.object({
+const base = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''
+
+if (!base) {
+  // Surface a clear error early in dev if env is missing
+  console.warn('VITE_API_BASE_URL is not set; API calls will likely fail')
+}
+
+export async function fetchItems() {
+  const res = await fetch(`${base}/api/v1/items`)
+  if (!res.ok) throw new Error(`Failed to fetch items: ${res.status}`)
+  const json = await res.json()
+  const parsed = ItemsSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid items response: ${parsed.error.message}`)
+  }
+  return parsed.data
+}
+
+export async function postItem(body: { name: string }) {
+  const res = await fetch(`${base}/api/v1/items`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err?.error ?? `Failed to create item: ${res.status}`)
+  }
+  const json = await res.json()
+  const parsed = ItemSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid create response: ${parsed.error.message}`)
+  }
+  return parsed.data
+}
+
+// ============ Museum API Functions (developブランチの既存実装) ============
+
+// [GET] /api/v1/museums?exclude_user_id=1
+export async function fetchMuseumItems(userId: number) {
+  const res = await fetch(`${base}/api/v1/museums?excludeUserId=${userId}&limit=10`)
+  if (!res.ok) throw new Error(`Failed to fetch museums: ${res.status}`)
+  const json = await res.json()
+  return json
+}
+
+// [GET] /api/v1/museums/:museumId
+// Define MuseumSchema to match the structure you described
+export const MuseumSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  name: z.string(),
+  description: z.string(),
+  visibility: z.string(),
+  imageUrl: z.string(),
+  createdAt: z.string(),
+})
+
+export async function fetchMuseumItemById(museumId: number) {
+  const res = await fetch(`${base}/api/v1/museums/${museumId}`)
+  if (!res.ok) throw new Error(`Failed to fetch museum item: ${res.status}`)
+  const json = await res.json()
+  const parsed = MuseumSchema.safeParse(json)
+  if (!parsed.success) {
+    throw new Error(`Invalid museum item response: ${parsed.error.message}`)
+  }
+  return parsed.data
+}
+
+// ============ Extended API Functions (新機能) ============
+
+// Museum related schemas for extended functionality
+const ExtendedMuseumSchema = z.object({
   id: z.number(),
   userId: z.number(),
   name: z.string(),
@@ -14,7 +85,7 @@ const MuseumSchema = z.object({
   createdAt: z.string(),
 })
 
-const MuseumsSchema = z.array(MuseumSchema)
+const MuseumsSchema = z.array(ExtendedMuseumSchema)
 
 const CreateMuseumSchema = z.object({
   userId: z.number(),
@@ -95,76 +166,11 @@ const MetObjectSchema = z.object({
 })
 
 // Type exports
-export type Museum = z.infer<typeof MuseumSchema>
+export type Museum = z.infer<typeof ExtendedMuseumSchema>
 export type CreateMuseumRequest = z.infer<typeof CreateMuseumSchema>
 export type UpdateTitleRequest = z.infer<typeof UpdateTitleSchema>
 export type ArtworkSearchResponse = z.infer<typeof ArtworkSearchResponseSchema>
 export type MetObject = z.infer<typeof MetObjectSchema>
-
-const base = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''
-
-if (!base) {
-  // Surface a clear error early in dev if env is missing
-  console.warn('VITE_API_BASE_URL is not set; API calls will likely fail')
-}
-
-export async function fetchItems() {
-  const res = await fetch(`${base}/api/v1/items`)
-  if (!res.ok) throw new Error(`Failed to fetch items: ${res.status}`)
-  const json = await res.json()
-  const parsed = ItemsSchema.safeParse(json)
-  if (!parsed.success) {
-    throw new Error(`Invalid items response: ${parsed.error.message}`)
-  }
-  return parsed.data
-}
-
-export async function postItem(body: { name: string }) {
-  const res = await fetch(`${base}/api/v1/items`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err?.error ?? `Failed to create item: ${res.status}`)
-  }
-  const json = await res.json()
-  const parsed = ItemSchema.safeParse(json)
-  if (!parsed.success) {
-    throw new Error(`Invalid create response: ${parsed.error.message}`)
-  }
-  return parsed.data
-}
-
-// ============ Museum API Functions ============
-
-// [GET] /api/v1/museums?exclude_user_id=1 (developブランチの既存実装)
-export async function fetchMuseumItems(userId: number) {
-  const res = await fetch(`${base}/api/v1/museums?excludeUserId=${userId}&limit=10`)
-  if (!res.ok) throw new Error(`Failed to fetch museums: ${res.status}`)
-  const json = await res.json()
-  const parsed = MuseumsSchema.safeParse(json)
-  if (!parsed.success) {
-    throw new Error(`Invalid museums response: ${parsed.error.message}`)
-  }
-  return parsed.data.map(museum => ({
-    id: museum.id,
-    name: museum.name
-  }))
-}
-
-// [GET] /api/v1/museums/:museumId (developブランチの既存実装)
-export async function fetchMuseumItemById(museumId: number) {
-  const res = await fetch(`${base}/api/v1/museums/${museumId}`)
-  if (!res.ok) throw new Error(`Failed to fetch museum item: ${res.status}`)
-  const json = await res.json()
-  const parsed = MuseumSchema.safeParse(json)
-  if (!parsed.success) {
-    throw new Error(`Invalid museum item response: ${parsed.error.message}`)
-  }
-  return parsed.data
-}
 
 /**
  * 公開ミュージアム取得（指定ユーザー以外） - 拡張版
@@ -190,7 +196,7 @@ export async function fetchPublicMuseums(excludeUserId: number, limit: number = 
 }
 
 /**
- * ミュージアム詳細取得
+ * ミュージアム詳細取得 - 拡張版
  */
 export async function fetchMuseumById(id: number): Promise<Museum> {
   const res = await fetch(`${base}/api/v1/museums/${id}`)
@@ -200,7 +206,7 @@ export async function fetchMuseumById(id: number): Promise<Museum> {
   }
 
   const json = await res.json()
-  const parsed = MuseumSchema.safeParse(json)
+  const parsed = ExtendedMuseumSchema.safeParse(json)
   if (!parsed.success) {
     throw new Error(`Invalid museum response: ${parsed.error.message}`)
   }
@@ -223,7 +229,7 @@ export async function createMuseum(museum: CreateMuseumRequest): Promise<Museum>
   }
 
   const json = await res.json()
-  const parsed = MuseumSchema.safeParse(json)
+  const parsed = ExtendedMuseumSchema.safeParse(json)
   if (!parsed.success) {
     throw new Error(`Invalid create museum response: ${parsed.error.message}`)
   }
@@ -247,8 +253,6 @@ export async function updateMuseumTitle(id: number, title: string): Promise<{ me
 
   return await res.json()
 }
-
-// ============ Artwork Search API Functions ============
 
 /**
  * 作品検索（MET Museum API連携）
@@ -309,8 +313,6 @@ export async function fetchMetObject(objectId: number): Promise<MetObject> {
   }
   return parsed.data
 }
-
-// ============ Health Check ============
 
 /**
  * ヘルスチェック
