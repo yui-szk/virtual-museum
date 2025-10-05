@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import TopPage from './components/TopPage'
 import MuseumScreen from './components/MuseumScreen'
+import MuseumScreenMe from './components/MuseumScreenMe'
 
 import CreationScreen from './components/CreationScreen'
 import MuseumMyListScreen from './components/MuseumMyListScreen'
@@ -15,7 +16,7 @@ export default function App() {
             <Route path="/" element={<TopPage />} />
             <Route path="/view" element={<MuseumScreen />} />
             <Route path="/create" element={<CreationScreen />} />
-            <Route path="/view/:museumId" element={<MuseumScreen />} />
+            <Route path="/view/:museumId" element={<MuseumScreenMe />} />
             <Route path="/museum/:museumId" element={<MuseumScreen />} />
             <Route path="/show" element={<MuseumMyListScreen />} />
           </Routes>

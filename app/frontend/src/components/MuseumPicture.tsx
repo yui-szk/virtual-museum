@@ -1,17 +1,13 @@
 interface MuseumPictureProps {
-  imageUrl: string;
+  imageUrl: string
 }
 
 const MuseumPicture = ({ imageUrl }: MuseumPictureProps) => {
   return (
-    <div className="w-full h-full overflow-hidden flex items-center justify-center">
-      <img
-        src={imageUrl}
-        alt="Museum Room"
-        className="h-full w-auto object-contain"
-      />
+    <div className="w-full h-full overflow-hidden">
+      <img src={imageUrl} alt="Museum Room" className="w-full h-full object-cover min-w-4xl" />
     </div>
-  );
+  )
 }
 
-export default MuseumPicture;
+export default MuseumPicture
