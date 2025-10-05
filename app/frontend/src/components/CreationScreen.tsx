@@ -1,16 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IconContext } from 'react-icons'
-import {
-  MdOutlineEdit,
-  MdOutlineCheck,
-  MdArrowBackIos,
-  MdArrowForwardIos,
-} from 'react-icons/md'
+import { MdOutlineEdit, MdOutlineCheck, MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 import RightSidebar from './RightSidebar'
-import FramedArtwork from './FramedArtwork'
-import bgImageUrl1 from '../assets/background/museum-back-1.jpg'
-import bgImageUrl2 from '../assets/background/museum-back-2.jpg'
+// import FramedArtwork from './FramedArtwork'
+import CanvasMerge from './CanvasMerge'
 
 interface Artwork {
   id: number
@@ -30,8 +24,7 @@ interface LeftSidebarProps {
 }
 
 // 適当な美術品の読み込み
-const artworkImageUrl =
-  'https://images.metmuseum.org/CRDImages/dp/web-large/DP821127.jpg'
+const artworkImageUrl = 'https://images.metmuseum.org/CRDImages/dp/web-large/DP821127.jpg'
 
 // 作品のダミーデータ生成
 const baseIdNumber = 821127
@@ -52,15 +45,15 @@ const dummyArtworks: Artwork[] = [
   }),
 ]
 
+import bgImageUrl1 from '/src/assets/background/museum-back-1.jpg'
+import bgImageUrl2 from '/src/assets/background/museum-back-2.jpg'
+
 const dummyBackgrounds: Background[] = [
   { id: 1, url: bgImageUrl1, name: '背景1' },
   { id: 2, url: bgImageUrl2, name: '背景2' },
 ]
 
-const LeftSidebar: React.FC<LeftSidebarProps> = ({
-  backgrounds,
-  onBackgroundSelect,
-}) => (
+const LeftSidebar: React.FC<LeftSidebarProps> = ({ backgrounds, onBackgroundSelect }) => (
   <div className="w-full h-full flex flex-col bg-white">
     <div className="p-4 border-b border-gray-200">
       <h3 className="text-sm font-semibold text-gray-800">背景一覧</h3>
@@ -69,11 +62,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
       <div className="grid grid-cols-1 gap-3">
         {backgrounds.map((bg) => (
           <div key={bg.id} onClick={() => onBackgroundSelect(bg.url)}>
-            <img
-              src={bg.url}
-              alt={bg.name}
-              className="w-full h-full object-cover"
-            />
+            <img src={bg.url} alt={bg.name} className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
@@ -81,7 +70,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
   </div>
 )
 
-type Slot = 'A' | 'B' | 'C'
+// type Slot = 'A' | 'B' | 'C'
 
 export default function CreationPage() {
   const navigate = useNavigate()
@@ -91,11 +80,11 @@ export default function CreationPage() {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true)
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true)
 
-  const [placements, setPlacements] = useState<Record<Slot, Artwork | null>>({
-    A: null,
-    B: null,
-    C: null,
-  })
+  // const [placements, setPlacements] = useState<Record<Slot, Artwork | null>>({
+  //   A: null,
+  //   B: null,
+  //   C: null,
+  // })
 
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null)
 
@@ -135,7 +124,6 @@ export default function CreationPage() {
     )
   }
 
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col w-full">
       {/* タイトルバー */}
@@ -172,74 +160,11 @@ export default function CreationPage() {
         )}
 
         {/* 中央コンテンツ */}
-        <div className="flex-1 flex flex-col items-center p-3 relative overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center p-3 relative">
           {/* ギャラリー表示 */}
-          <div className="relative w-full max-w-5xl aspect-video bg-gray-200 rounded-xl shadow-2xl overflow-hidden">
-            <img
-              src={currentBackground}
-              alt="Museum Background"
-              className="w-full h-full object-cover"
-              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                e.currentTarget.src =
-                  'https://placehold.co/1200x675/990000/FFFFFF?text=Background+Load+Error'
-              }}
-            />
-
-            {/* 配置スロット */}
-            <div className="absolute inset-0">
-              <div
-                onClick={() => handlePlaceArtwork('A')}
-                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
-                style={{
-                  width: '12%',
-                  height: '25%',
-                  top: '51%',
-                  left: '22%',
-                }}
-              >
-                {placements.A ? (
-                  <FramedArtwork artwork={placements.A} />
-                ) : (
-                  renderSlotContent('A')
-                )}
-              </div>
-
-              <div
-                onClick={() => handlePlaceArtwork('B')}
-                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
-                style={{
-                  width: '18%',
-                  height: '26%',
-                  top: '49%',
-                  left: '38%',
-                }}
-              >
-                {placements.B ? (
-                  <FramedArtwork artwork={placements.B} />
-                ) : (
-                  renderSlotContent('B')
-                )}
-              </div>
-
-              <div
-                onClick={() => handlePlaceArtwork('C')}
-                className="absolute flex items-center justify-center transition-all duration-200 cursor-pointer"
-                style={{
-                  width: '12%',
-                  height: '25%',
-                  top: '52%',
-                  right: '29%',
-                }}
-              >
-                {placements.C ? (
-                  <FramedArtwork artwork={placements.C} />
-                ) : (
-                  renderSlotContent('C')
-                )}
-              </div>
-            </div>
+          <div className="relative w-full max-w-5xl aspect-video rounded-lg">
+            <CanvasMerge background={currentBackground} selectedArtworkId={selectedArtworkId} />
           </div>
-
           {/* タイトル入力 */}
           <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
             <button
@@ -266,9 +191,7 @@ export default function CreationPage() {
                 </IconContext.Provider>
               </button>
             </div>
-            <button className="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 transition shadow">
-              完了
-            </button>
+            <button className="px-4 py-2 text-sm font-semibold text-white  rounded-md transition"></button>
           </div>
         </div>
 
