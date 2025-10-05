@@ -25,21 +25,10 @@ const MuseumScreen = () => {
     loadContents()
   }, [])
 
-  // HACK: 仮のAPIエンドポイント
-  // useEffect(() => {
-  //   fetch('/api/museum/image')
-  //     .then(res => res.json())
-  //     .then(data => setMuseumImage(data.imageUrl))
-  //     .catch(() => setMuseumImage(''));
-  // }, []);
-
   return (
     <div className="min-h-screen max-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col">
       <div className="w-full max-w-6xl mx-auto pt-6 px-4">
-        <a
-          href="/show"
-          className="text-blue-600 hover:underline font-medium flex items-center gap-1"
-        >
+        <a href="/" className="text-blue-600 hover:underline font-medium flex items-center gap-1">
           &larr; 一覧へ戻る
         </a>
       </div>
