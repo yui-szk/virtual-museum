@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { IconContext } from 'react-icons'
 import {
   MdOutlineEdit,
@@ -83,6 +84,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
 type Slot = 'A' | 'B' | 'C'
 
 export default function CreationPage() {
+  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
   const [currentBackground, setCurrentBackground] = useState<string>(bgImageUrl1)
@@ -110,6 +112,10 @@ export default function CreationPage() {
     }
   }
 
+  const handleGoBack = () => {
+    navigate('/')
+  }
+
   const renderSlotContent = (slot: Slot) => {
     const artwork = placements[slot]
     if (artwork) {
@@ -120,8 +126,8 @@ export default function CreationPage() {
     return (
       <div
         className={`flex items-center justify-center h-full w-full p-2 rounded-md transition duration-200 border-2 border-dashed ${isSelected
-            ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
-            : 'bg-white/70 border-gray-400 hover:bg-gray-100'
+          ? 'bg-blue-200/90 border-blue-600 ring-2 ring-blue-500'
+          : 'bg-white/70 border-gray-400 hover:bg-gray-100'
           }`}
       >
         <span className="text-sm font-bold text-gray-800">{slot}</span>
@@ -236,7 +242,10 @@ export default function CreationPage() {
 
           {/* タイトル入力 */}
           <div className="flex justify-between items-center w-full max-w-xl mt-4 mb-4">
-            <button className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow">
+            <button
+              onClick={handleGoBack}
+              className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-300 rounded-md hover:bg-gray-400 transition shadow"
+            >
               戻る
             </button>
             <div className="p-2 bg-white rounded-md shadow flex items-center gap-2">
