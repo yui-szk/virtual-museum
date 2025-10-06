@@ -1,4 +1,4 @@
-# 技育camp Hackathon
+# virtual-museum
 
 ## フレームワーク等
 
