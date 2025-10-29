@@ -74,11 +74,3 @@ docker compose up -d --build
 
 MySQL コンテナの環境変数（`infra/.env`）:
 - `MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`
-
-## GitHub Pagesへのデプロイ
-
-このプロジェクトはGitHub Actionsを使用してGitHub Pagesに自動デプロイされます。
-
-- デプロイURL: `https://yui-szk.github.io/virtual-museum/`
-- デプロイは `main` ブランチへのプッシュ時に自動実行されます
-- 詳細は [docs/deployment.md](docs/deployment.md) を参照してください
