@@ -1,64 +1,64 @@
-name: Notify Discord on Git Events
+# name: Notify Discord on Git Events
 
-on:
-  pull_request:
-    types: [opened, reopened, synchronize, closed]
-  pull_request_review:
-    types: [submitted]
+# on:
+#   pull_request:
+#     types: [opened, reopened, synchronize, closed]
+#   pull_request_review:
+#     types: [submitted]
 
-jobs:
-  notify:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build message for PR
-        if: github.event_name == 'pull_request'
-        run: |
-          ACTION="${{ github.event.action }}"
-          NUMBER=${{ github.event.pull_request.number }}
-          TITLE=$(jq -r '.pull_request.title' <<< '${{ toJson(github.event) }}')
-          URL=$(jq -r '.pull_request.html_url' <<< '${{ toJson(github.event) }}')
-          FROM=$(jq -r '.pull_request.head.ref' <<< '${{ toJson(github.event) }}')
-          TO=$(jq -r '.pull_request.base.ref' <<< '${{ toJson(github.event) }}')
-          MERGED=$(jq -r '.pull_request.merged' <<< '${{ toJson(github.event) }}')
+# jobs:
+#   notify:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Build message for PR
+#         if: github.event_name == 'pull_request'
+#         run: |
+#           ACTION="${{ github.event.action }}"
+#           NUMBER=${{ github.event.pull_request.number }}
+#           TITLE=$(jq -r '.pull_request.title' <<< '${{ toJson(github.event) }}')
+#           URL=$(jq -r '.pull_request.html_url' <<< '${{ toJson(github.event) }}')
+#           FROM=$(jq -r '.pull_request.head.ref' <<< '${{ toJson(github.event) }}')
+#           TO=$(jq -r '.pull_request.base.ref' <<< '${{ toJson(github.event) }}')
+#           MERGED=$(jq -r '.pull_request.merged' <<< '${{ toJson(github.event) }}')
 
-          if [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then
-            PREFIX="**[PR MERGED]**"
-          else
-            PREFIX="**[PR ${ACTION^^}]**"
-          fi
+#           if [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then
+#             PREFIX="**[PR MERGED]**"
+#           else
+#             PREFIX="**[PR ${ACTION^^}]**"
+#           fi
 
-          CONTENT="${PREFIX} #${NUMBER} **${TITLE}**\n\`${FROM}\` → \`${TO}\`\n${URL}"
+#           CONTENT="${PREFIX} #${NUMBER} **${TITLE}**\n\`${FROM}\` → \`${TO}\`\n${URL}"
 
-          {
-            echo "CONTENT<<EOF"
-            echo -e "$CONTENT"
-            echo "EOF"
-          } >> $GITHUB_ENV
+#           {
+#             echo "CONTENT<<EOF"
+#             echo -e "$CONTENT"
+#             echo "EOF"
+#           } >> $GITHUB_ENV
 
-      - name: Build message for PR Review
-        if: github.event_name == 'pull_request_review'
-        run: |
-          STATE=$(jq -r '.review.state' <<< '${{ toJson(github.event) }}')
-          NUMBER=${{ github.event.pull_request.number }}
-          URL=$(jq -r '.review.html_url' <<< '${{ toJson(github.event) }}')
-          CONTENT="**[PR REVIEW]** #${NUMBER} → **${STATE^^}** by **${{ github.actor }}**\n${URL}"
+#       - name: Build message for PR Review
+#         if: github.event_name == 'pull_request_review'
+#         run: |
+#           STATE=$(jq -r '.review.state' <<< '${{ toJson(github.event) }}')
+#           NUMBER=${{ github.event.pull_request.number }}
+#           URL=$(jq -r '.review.html_url' <<< '${{ toJson(github.event) }}')
+#           CONTENT="**[PR REVIEW]** #${NUMBER} → **${STATE^^}** by **${{ github.actor }}**\n${URL}"
 
-          {
-            echo "CONTENT<<EOF"
-            echo -e "$CONTENT"
-            echo "EOF"
-          } >> $GITHUB_ENV
+#           {
+#             echo "CONTENT<<EOF"
+#             echo -e "$CONTENT"
+#             echo "EOF"
+#           } >> $GITHUB_ENV
 
-      - name: Post to Discord
-        env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          CONTENT: ${{ env.CONTENT }}
-        run: |
-          jq -n --arg content "$CONTENT" \
-            '{content: $content}' \
-            > payload.json
+#       - name: Post to Discord
+#         env:
+#           WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+#           CONTENT: ${{ env.CONTENT }}
+#         run: |
+#           jq -n --arg content "$CONTENT" \
+#             '{content: $content}' \
+#             > payload.json
 
-          curl -s -H "Content-Type: application/json" \
-               -X POST \
-               -d @payload.json \
-               "$WEBHOOK"
+#           curl -s -H "Content-Type: application/json" \
+#                -X POST \
+#                -d @payload.json \
+#                "$WEBHOOK"
