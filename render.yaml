@@ -3,6 +3,10 @@ services:
     name: backend
     runtime: docker
     dockerfilePath: app/backend/Dockerfile
+    # Set the Docker build context to the backend directory so COPY instructions
+    # in the Dockerfile (which expect go.mod and source files at the context root)
+    # work correctly during the build.
+    dockerContext: app/backend
     plan: free
     # 必要に応じて追加: healthCheckPath: /healthz
     envVars:
