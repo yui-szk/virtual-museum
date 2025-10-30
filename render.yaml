@@ -3,16 +3,10 @@ services:
     name: backend
     runtime: docker
     dockerfilePath: app/backend/Dockerfile
-    # Set the Docker build context to the backend directory so COPY instructions
-    # in the Dockerfile (which expect go.mod and source files at the context root)
-    # work correctly during the build.
     dockerContext: app/backend
     plan: free
     # 必要に応じて追加: healthCheckPath: /healthz
     envVars:
-      # Reference values from the managed Render Postgres database named `appdb`.
-      # This uses the Blueprint `fromDatabase` feature so Render injects the
-      # correct internal connection values at deploy time.
       - key: DB_HOST
         fromDatabase:
           name: appdb
@@ -50,28 +44,8 @@ services:
       - key: VITE_API_BASE_URL
         value: https://backend.onrender.com
 
-# Managed database configuration
-# After Render provisions the database, set the real DB connection values
-# (host, port, user, password) on the backend service via the Render Dashboard
-# Environment/Secrets UI. Do NOT commit plaintext secrets into this file.
-
-# If you prefer, the Dashboard provides connection strings and environment
-# variable names you can directly use instead of the placeholders above.
-
 databases:
   - name: appdb
-    # Render Blueprints currently manage Postgres databases. Define a Postgres
-    # database here and Render will provision it. If you need MySQL specifically,
-    # use an external provider and set DB_HOST/DB_PASSWORD as secrets instead.
     plan: free
-    # Optionally set a major Postgres version. If omitted, Render uses the
-    # current default (latest supported major version).
-    # postgresMajorVersion: "17"
-    # Optionally set the database name and user to be created inside the
-    # Postgres instance. If omitted, Render will generate them.
     databaseName: appdb
     user: app
-    # Notes:
-    # - Check Render's dashboard after provisioning to get HOST/PORT/PASSWORD.
-    # - If Render does not allow a free managed MySQL plan, adjust `plan`.
-
