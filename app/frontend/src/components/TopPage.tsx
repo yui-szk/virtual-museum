@@ -12,13 +12,17 @@ interface Door {
   color: string
 }
 
-//* ドアの色作成する関数
-const getRandomColor = (): string => {
-  const h = Math.floor(Math.random() * 360)
-  const s = Math.floor(Math.random() * 20) + 60
-  const l = Math.floor(Math.random() * 20) + 75
-  return `hsl(${h}, ${s}%, ${l}%)`
-}
+// ギャラリー調のドア色パレット。id から決定的に選ぶことで再描画しても色が変わらない
+const DOOR_PALETTE = [
+  '#41513f', // 深緑
+  '#5a3535', // オックスブラッド
+  '#4a3728', // ウォルナット
+  '#3a4458', // スレートブルー
+  '#463349', // オーベルジーン
+  '#2f4a4d', // ダークティール
+] as const
+
+const doorColorForId = (id: number): string => DOOR_PALETTE[Math.abs(id) % DOOR_PALETTE.length]
 
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント
 export default function TopPage() {
@@ -32,12 +36,12 @@ export default function TopPage() {
     setError(null)
     try {
       const museums = await fetchPublicMuseums(1) // HACK: 仮のユーザーID
-      // 取得したデータにランダムな色を追加
+      // 取得したデータに id から決まる色を付与
       const doorsWithColors = museums.map((museum) => ({
         id: museum.id,
         user_id: museum.userId,
         name: museum.name,
-        color: getRandomColor(),
+        color: doorColorForId(museum.id),
       }))
       setDoorsData(doorsWithColors)
     } catch (err) {
@@ -102,7 +106,7 @@ export default function TopPage() {
             <div className={DOOR_GRID_CLASS} role="status" aria-label="美術館を読み込み中">
               {Array.from({ length: 10 }, (_, i) => (
                 <div key={i}>
-                  <div className="h-[250px] animate-pulse rounded-sm border border-white/5 bg-ink-700/50" />
+                  <div className="aspect-[5/8] animate-pulse rounded-[2px] border border-white/5 bg-ink-700/50" />
                   <div className="mx-auto mt-3 h-5 w-2/3 animate-pulse rounded-[2px] bg-ink-700/50" />
                 </div>
               ))}
@@ -139,7 +143,8 @@ const NAV_BUTTON_CLASS =
   'rounded-sm border border-brass-400/40 px-4 py-2 font-serif-jp text-sm tracking-wider text-brass-300 transition-colors hover:border-brass-400 hover:bg-brass-400/10'
 
 // ドアグリッド（スケルトンと実表示でレイアウトを揃えるため共有）
-const DOOR_GRID_CLASS = 'grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto'
+const DOOR_GRID_CLASS =
+  'mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 lg:grid-cols-5'
 
 // ドアコンポーネントのProps型
 interface DoorProps {
@@ -150,21 +155,40 @@ interface DoorProps {
 // ドアコンポーネント
 const DoorComponent: React.FC<DoorProps> = ({ door, onClick }) => {
   return (
-    <div
+    <button
+      type="button"
       onClick={() => onClick(door.id)}
-      className="relative w-full h-[250px] cursor-pointer select-none transition-transform duration-100 ease-in-out rounded-sm border-8 border-gray-800 shadow-md flex flex-col items-center justify-start overflow-hidden hover:scale-[1.03]"
-      style={{ backgroundColor: door.color }}
+      aria-label={`${door.name} の美術館に入る`}
+      className="group block w-full cursor-pointer select-none perspective-[900px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brass-400"
     >
-      {/* 内側の段差パネル */}
-      <div className="absolute top-4 left-4 right-4 bottom-4 border-2 border-gray-800 shadow-inner" />
+      {/* 戸口: 枠と、開いたときに見える内部の暗がり */}
+      <div className="relative aspect-[5/8] rounded-[2px] border-[6px] border-[#241c12] shadow-[0_12px_28px_rgba(0,0,0,0.55)] ring-1 ring-brass-500/30">
+        <div className="absolute inset-0 bg-ink-950" />
+        {/* 開いたときに漏れる金色の光 */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(232,213,163,0.4),transparent_70%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100" />
 
-      {/* ドアハンドル */}
-      <div className="absolute right-[12px] top-1/2 -translate-y-1/2 w-4 h-4 bg-gray-300 border border-gray-700 rounded-full" />
+        {/* ドア本体（左ヒンジで開く） */}
+        <div
+          className="absolute inset-0 origin-left transform-3d transition-transform duration-500 ease-out group-hover:rotate-y-[-30deg] group-focus-visible:rotate-y-[-30deg] motion-reduce:transition-none motion-reduce:group-hover:rotate-y-0 motion-reduce:group-focus-visible:rotate-y-0"
+          style={{ backgroundColor: door.color }}
+        >
+          {/* 上から下への僅かな明暗（木の質感） */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/25" />
+          {/* 上長・下短の鏡板 */}
+          <div className="absolute left-[14%] right-[14%] top-[8%] h-[46%] border border-black/30 bg-white/[0.04] shadow-[inset_2px_2px_6px_rgba(0,0,0,0.35)]" />
+          <div className="absolute bottom-[8%] left-[14%] right-[14%] h-[30%] border border-black/30 bg-white/[0.04] shadow-[inset_2px_2px_6px_rgba(0,0,0,0.35)]" />
+          {/* 真鍮ハンドル */}
+          <div className="absolute right-[9%] top-1/2 size-2.5 -translate-y-1/2 rounded-full bg-gradient-to-br from-brass-300 to-brass-500 shadow-[0_1px_3px_rgba(0,0,0,0.6)] sm:size-3" />
+        </div>
+      </div>
 
-      {/* ドア名ラベル */}
-      <div className="absolute px-[6px] py-[3px] rounded max-w-[90%] text-ellipsis overflow-hidden whitespace-nowrap text-center bottom-[5px] left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px]">
+      {/* 真鍮ネームプレート */}
+      <div
+        className="mx-auto mt-3 w-fit max-w-full truncate rounded-[2px] bg-gradient-to-b from-brass-300 to-brass-500 px-3 py-1 text-center font-serif-jp text-[11px] tracking-wide text-ink-900 shadow-[0_1px_2px_rgba(0,0,0,0.4)] sm:text-xs"
+        title={door.name}
+      >
         {door.name}
       </div>
-    </div>
+    </button>
   )
 }
