@@ -16,7 +16,7 @@ import (
     "backend/internal/logger"
     "backend/internal/repository"
     "backend/internal/service"
-    _"github.com/go-sql-driver/mysql"
+    _ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // main wires dependencies manually. A wire-ready provider set is also included
@@ -28,31 +28,31 @@ func main() {
     // Repository and service wiring
     var repo repository.ItemRepository
     var museumRepo repository.MuseumRepository
-    var mysqlDB *sql.DB
+    var pgDB *sql.DB
 
     if cfg.DBEnabled {
-        dsn := cfg.MySQLDSN()
-        if db, err := sql.Open("mysql", dsn); err != nil {
-            log.Error("mysql connect failed; falling back to memory", slog.String("error", err.Error()))
+        dsn := cfg.PostgresDSN()
+        if db, err := sql.Open("pgx", dsn); err != nil {
+            log.Error("postgres connect failed; falling back to memory", slog.String("error", err.Error()))
             mem := repository.NewInMemoryItemRepository()
             _ = mem.MustSeed("First item", "Second item")
             repo = mem
             // museumRepoはnilのまま（エラーハンドリング用）
         } else {
-            // MySQL接続成功時
-            if mysqlRepo, err := repository.NewMySQLItemRepository(dsn, cfg.DBMigrate); err != nil {
-                log.Error("mysql item repo failed; falling back to memory", slog.String("error", err.Error()))
+            // PostgreSQL接続成功時
+            if pgRepo, err := repository.NewPostgresItemRepository(dsn, cfg.DBMigrate); err != nil {
+                log.Error("postgres item repo failed; falling back to memory", slog.String("error", err.Error()))
                 mem := repository.NewInMemoryItemRepository()
                 _ = mem.MustSeed("First item", "Second item")
                 repo = mem
             } else {
-                mysqlDB = db
-                log.Info("using mysql repository")
-                repo = mysqlRepo
+                pgDB = db
+                log.Info("using postgres repository")
+                repo = pgRepo
             }
-            
+
             // Museum リポジトリの初期化
-            museumRepo = repository.NewMySQLMuseumRepository(mysqlDB)
+            museumRepo = repository.NewPostgresMuseumRepository(pgDB)
         }
     } else {
         mem := repository.NewInMemoryItemRepository()
@@ -101,8 +101,8 @@ func main() {
     if err := srv.Shutdown(ctx); err != nil {
         log.Error("graceful shutdown failed", slog.String("error", err.Error()))
     }
-    if mysqlDB != nil {
-        _ = mysqlDB.Close()
+    if pgDB != nil {
+        _ = pgDB.Close()
     }
     log.Info("server stopped")
 }

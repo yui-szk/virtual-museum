@@ -301,11 +301,11 @@ DB_MIGRATE=true
 
 1. **データベース接続エラー**
    ```bash
-   # MySQLコンテナが起動しているか確認
+   # PostgreSQLコンテナが起動しているか確認
    docker compose ps
    
    # ログを確認
-   docker compose logs app-mysql
+   docker compose logs app-db
    ```
 
 2. **CORS エラー**

@@ -16,7 +16,7 @@ infra/
 - Frontend validates API responses with zod
 - Hot reload: Vite HMR / Air for Go
 - Lint/Format: golangci-lint, eslint + prettier; Tests: go test, vitest
- - Database: MySQL（docker-compose で起動、初回に自動テーブル作成）
+ - Database: PostgreSQL（docker-compose で起動、初回に自動テーブル作成）
 
 ## 立ち上げ方法
 
@@ -50,7 +50,7 @@ docker compose up -d --build
 | 停止と片付け | - | `docker compose down -v --remove-orphans` を実行|
 
 
-> バックエンドは `.env` の DB 設定に基づき MySQL に接続します（デフォルト有効）。接続に失敗した場合はインメモリ実装にフォールバックします。
+> バックエンドは `.env` の DB 設定に基づき PostgreSQL に接続します（デフォルト有効）。接続に失敗した場合はインメモリ実装にフォールバックします。
 
 ## ポート設定等
 - Frontend: `FRONTEND_PORT`（デフォルト 5173）
@@ -68,9 +68,10 @@ docker compose up -d --build
 
 ## DB 関連
 - `DB_ENABLED`（true/false）: DB 利用の有効/無効（デフォルト true）
-- `DB_HOST`, `DB_PORT`: 例 `app-mysql:3306`
+- `DB_HOST`, `DB_PORT`: 例 `app-db:5432`
 - `DB_USER`, `DB_PASSWORD`, `DB_NAME`
+- `DB_SSLMODE`: TLS 設定（ローカルは `disable`、未指定時は `prefer`）
 - `DB_MIGRATE`: 起動時にテーブル自動作成（true 推奨）
 
-MySQL コンテナの環境変数（`infra/.env`）:
-- `MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`
+PostgreSQL コンテナの環境変数（`infra/.env`）:
+- `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`

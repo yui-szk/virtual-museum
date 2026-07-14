@@ -1,6 +1,7 @@
 package config
 
 import (
+    "net/url"
     "os"
     "strconv"
     "strings"
@@ -12,13 +13,14 @@ type Config struct {
     AllowedOrigins []string
     Env            string // development, production, test
 
-    // MySQL
+    // PostgreSQL
     DBEnabled bool
     DBHost    string
     DBPort    int
     DBUser    string
     DBPass    string
     DBName    string
+    DBSSLMode string
     DBMigrate bool // create tables if not exists
 }
 
@@ -52,15 +54,18 @@ func Load() Config {
 
     // Database settings (defaults suitable for docker-compose)
     dbEnabled := strings.ToLower(getEnv("DB_ENABLED", "true")) == "true"
-    dbHost := getEnv("DB_HOST", "app-mysql")
-    dbPortStr := getEnv("DB_PORT", "3306")
+    dbHost := getEnv("DB_HOST", "app-db")
+    dbPortStr := getEnv("DB_PORT", "5432")
     dbPort, _ := strconv.Atoi(dbPortStr)
     if dbPort <= 0 {
-        dbPort = 3306
+        dbPort = 5432
     }
     dbUser := getEnv("DB_USER", "appuser")
     dbPass := getEnv("DB_PASSWORD", getEnv("DB_PASS", "apppass"))
     dbName := getEnv("DB_NAME", "appdb")
+    // "prefer" uses TLS when the server supports it (e.g. Render) and falls
+    // back to plaintext for the local docker-compose database.
+    dbSSLMode := getEnv("DB_SSLMODE", "prefer")
     dbMigrate := strings.ToLower(getEnv("DB_MIGRATE", "true")) == "true"
 
     return Config{
@@ -73,16 +78,25 @@ func Load() Config {
         DBUser:         dbUser,
         DBPass:         dbPass,
         DBName:         dbName,
+        DBSSLMode:      dbSSLMode,
         DBMigrate:      dbMigrate,
     }
 }
 
-// MySQLDSN builds a DSN using environment configuration.
-func (c Config) MySQLDSN() string {
+// PostgresDSN builds a DSN using environment configuration.
+func (c Config) PostgresDSN() string {
     hostport := c.DBHost
     if c.DBPort > 0 {
         hostport = c.DBHost + ":" + strconv.Itoa(c.DBPort)
     }
-    // parseTime enables time.Time for DATETIME/TIMESTAMP
-    return c.DBUser + ":" + c.DBPass + "@tcp(" + hostport + ")/" + c.DBName + "?parseTime=true&charset=utf8mb4&loc=Local"
+    u := url.URL{
+        Scheme: "postgres",
+        User:   url.UserPassword(c.DBUser, c.DBPass),
+        Host:   hostport,
+        Path:   c.DBName,
+    }
+    q := u.Query()
+    q.Set("sslmode", c.DBSSLMode)
+    u.RawQuery = q.Encode()
+    return u.String()
 }

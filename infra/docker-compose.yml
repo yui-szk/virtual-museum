@@ -16,6 +16,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
+      - DB_SSLMODE=${DB_SSLMODE}
       - DB_MIGRATE=${DB_MIGRATE}
     ports:
       - "${BACKEND_PORT}:8080"
@@ -30,7 +31,7 @@ services:
       timeout: 3s
       retries: 10
     depends_on:
-      app-mysql:
+      app-db:
         condition: service_healthy
 
   app-frontend:
@@ -51,19 +52,18 @@ services:
       app-backend:
         condition: service_started
 
-  app-mysql:
-    image: mysql:8.4
+  app-db:
+    image: postgres:17-alpine
     env_file:
       - ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -72,5 +72,5 @@ volumes:
   go_pkg: {}
   go_build: {}
   frontend_node_modules: {}
-  mysql_data: {}
+  postgres_data: {}
   app_tmp: {}

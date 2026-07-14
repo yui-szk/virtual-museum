@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"time"
 
 	"backend/internal/domain"
 )
@@ -15,24 +14,24 @@ type MuseumRepository interface {
 	Insert(m domain.Museum) (*domain.Museum, error)
 }
 
-// MySQLMuseumRepository はMySQLを使用したMuseumRepositoryの実装
-type MySQLMuseumRepository struct {
+// PostgresMuseumRepository はPostgreSQLを使用したMuseumRepositoryの実装
+type PostgresMuseumRepository struct {
 	db *sql.DB
 }
 
-// NewMySQLMuseumRepository は新しいMySQLMuseumRepositoryを作成する
-func NewMySQLMuseumRepository(db *sql.DB) MuseumRepository {
-	return &MySQLMuseumRepository{db: db}
+// NewPostgresMuseumRepository は新しいPostgresMuseumRepositoryを作成する
+func NewPostgresMuseumRepository(db *sql.DB) MuseumRepository {
+	return &PostgresMuseumRepository{db: db}
 }
 
 // GetPublicMuseumsExcludingUser は指定ユーザー以外の公開ミュージアムを取得する
-func (r *MySQLMuseumRepository) GetPublicMuseumsExcludingUser(excludeUserID int, limit int) ([]domain.Museum, error) {
+func (r *PostgresMuseumRepository) GetPublicMuseumsExcludingUser(excludeUserID int, limit int) ([]domain.Museum, error) {
 	query := `
 		SELECT id, user_id, name, description, visibility, image_url, created_at
 		FROM museums
-		WHERE visibility='public' AND user_id <> ?
+		WHERE visibility='public' AND user_id <> $1
 		ORDER BY id DESC
-		LIMIT ?
+		LIMIT $2
 	`
 
 	rows, err := r.db.Query(query, excludeUserID, limit)
@@ -69,11 +68,11 @@ func (r *MySQLMuseumRepository) GetPublicMuseumsExcludingUser(excludeUserID int,
 }
 
 // FindByID は指定IDのミュージアムを取得する
-func (r *MySQLMuseumRepository) FindByID(id int) (*domain.Museum, error) {
+func (r *PostgresMuseumRepository) FindByID(id int) (*domain.Museum, error) {
 	query := `
 		SELECT id, user_id, name, description, visibility, image_url, created_at
 		FROM museums
-		WHERE id = ?
+		WHERE id = $1
 	`
 
 	var m domain.Museum
@@ -100,8 +99,8 @@ func (r *MySQLMuseumRepository) FindByID(id int) (*domain.Museum, error) {
 }
 
 // UpdateTitle はミュージアムのタイトルを更新する
-func (r *MySQLMuseumRepository) UpdateTitle(id int, title string) error {
-	query := `UPDATE museums SET name = ? WHERE id = ?`
+func (r *PostgresMuseumRepository) UpdateTitle(id int, title string) error {
+	query := `UPDATE museums SET name = $1 WHERE id = $2`
 
 	result, err := r.db.Exec(query, title, id)
 	if err != nil {
@@ -121,24 +120,18 @@ func (r *MySQLMuseumRepository) UpdateTitle(id int, title string) error {
 }
 
 // Insert は新しいミュージアムを作成する
-func (r *MySQLMuseumRepository) Insert(m domain.Museum) (*domain.Museum, error) {
+func (r *PostgresMuseumRepository) Insert(m domain.Museum) (*domain.Museum, error) {
 	query := `
 		INSERT INTO museums (user_id, name, description, visibility, image_url)
-		VALUES (?, ?, ?, ?, ?)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, created_at
 	`
 
-	result, err := r.db.Exec(query, m.UserID, m.Name, m.Description, string(m.Visibility), m.ImageURL)
+	err := r.db.QueryRow(query, m.UserID, m.Name, m.Description, string(m.Visibility), m.ImageURL).
+		Scan(&m.ID, &m.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-
-	m.ID = int(id)
-	m.CreatedAt = time.Now()
 
 	return &m, nil
 }
