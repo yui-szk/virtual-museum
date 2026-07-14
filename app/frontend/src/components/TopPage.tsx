@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { fetchMuseumItems } from '../lib/api'
+import { fetchPublicMuseums } from '../lib/api'
 
 // ドアの情報を定義する型
 interface Door {
@@ -26,15 +26,19 @@ export default function TopPage() {
 
   useEffect(() => {
     const loadContents = async () => {
-      const contents = await fetchMuseumItems(1) // HACK: 仮のユーザーID
-      // 取得したデータにランダムな色を追加
-      const doorsWithColors = contents.map((item) => ({
-        id: item.id,
-        user_id: 1, // HACK: 仮のユーザーID
-        name: item.name,
-        color: getRandomColor(),
-      }))
-      setDoorsData(doorsWithColors)
+      try {
+        const museums = await fetchPublicMuseums(1) // HACK: 仮のユーザーID
+        // 取得したデータにランダムな色を追加
+        const doorsWithColors = museums.map((museum) => ({
+          id: museum.id,
+          user_id: museum.userId,
+          name: museum.name,
+          color: getRandomColor(),
+        }))
+        setDoorsData(doorsWithColors)
+      } catch (err) {
+        console.error('美術館一覧の取得に失敗しました', err)
+      }
     }
     loadContents()
   }, [])
