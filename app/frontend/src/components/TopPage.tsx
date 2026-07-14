@@ -1,15 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { fetchMuseumItems } from '../lib/api'
-
-// 【追加】window.location.href を使用する場合、ここに宣言
-const handleNavigate = (path: string) => {
-  window.location.href = path
-}
-
-const handleDoorClick = (doorId: number) => {
-  handleNavigate(`/museum/${doorId}`)
-}
 
 // ドアの情報を定義する型
 interface Door {
@@ -29,6 +21,7 @@ const getRandomColor = (): string => {
 
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント
 export default function TopPage() {
+  const navigate = useNavigate()
   const [doorsData, setDoorsData] = useState<Door[]>([])
 
   useEffect(() => {
@@ -46,14 +39,19 @@ export default function TopPage() {
     loadContents()
   }, [])
 
+  // ドアが押された時の動作
+  const handleDoorClick = (doorId: number) => {
+    navigate(`/museum/${doorId}`)
+  }
+
   // 新規作成ボタンが押された時の動作
   const handleNewCreationClick = () => {
-    handleNavigate('/create')
+    navigate('/create')
   }
 
   // 自分の部屋一覧ボタンが押された時の動作
   const handleMyRoomsClick = () => {
-    handleNavigate('/show')
+    navigate('/show')
   }
 
   return (
