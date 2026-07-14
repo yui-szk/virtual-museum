@@ -5,8 +5,14 @@ services:
     dockerfilePath: app/backend/Dockerfile
     dockerContext: app/backend
     plan: free
-    # 必要に応じて追加: healthCheckPath: /healthz
+    healthCheckPath: /health
     envVars:
+      - key: APP_ENV
+        value: production
+      # フロントエンドの公開URL（例: https://frontend-xxxx.onrender.com）を
+      # Renderダッシュボードで設定する（sync: false のため同期時に入力を求められる）
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
       - key: DB_HOST
         fromDatabase:
           name: appdb
@@ -41,8 +47,10 @@ services:
         source: /**/*
         destination: /index.html
     envVars:
+      # バックエンドの公開URL（例: https://backend-xxxx.onrender.com）を
+      # Renderダッシュボードで設定する（sync: false のため同期時に入力を求められる）
       - key: VITE_API_BASE_URL
-        value: https://backend.onrender.com
+        sync: false
 
 databases:
   - name: appdb
