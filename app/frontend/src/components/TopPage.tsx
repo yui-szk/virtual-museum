@@ -59,29 +59,44 @@ export default function TopPage() {
   }
 
   return (
-    <div className="container text-center p-12">
-      <div className="flex justify-between items-center mb-4 w-full max-w-[800px] mx-auto">
-        <button
-          onClick={handleMyRoomsClick}
-          className="px-4 py-2 bg-blue-400 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
-        >
-          自分の部屋一覧
-        </button>
-        <button
-          onClick={handleNewCreationClick}
-          className="px-4 py-2 bg-blue-400 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 transition-colors text-sm"
-        >
-          新規作成
-        </button>
-      </div>
-      <div className="grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto my-10">
-        {doorsData.slice(0, 10).map((door) => (
-          <DoorComponent key={door.id} door={door} onClick={() => handleDoorClick(door.id)} />
-        ))}
+    <div className="min-h-screen w-full bg-gradient-to-b from-ink-800 via-ink-900 to-ink-950">
+      <div className="mx-auto flex max-w-5xl flex-col px-4 py-8 sm:px-6">
+        <header className="flex items-center justify-between gap-4">
+          <button onClick={handleMyRoomsClick} className={NAV_BUTTON_CLASS}>
+            自分の部屋一覧
+          </button>
+          <button onClick={handleNewCreationClick} className={NAV_BUTTON_CLASS}>
+            新規作成
+          </button>
+        </header>
+
+        {/* ヒーロー領域 */}
+        <section className="pt-10 pb-12 text-center">
+          <p className="text-xs uppercase tracking-[0.35em] text-brass-400">Virtual Museum</p>
+          <h1 className="mt-3 font-serif-jp text-4xl tracking-wide text-parchment sm:text-5xl">
+            バーチャル美術館
+          </h1>
+          <div className="mx-auto mt-5 h-px w-16 bg-gradient-to-r from-transparent via-brass-400 to-transparent" />
+          <p className="mt-4 font-serif-jp text-sm text-parchment/60 sm:text-base">
+            扉を開けて、誰かの美術館へ
+          </p>
+        </section>
+
+        <main className="pb-12">
+          <div className="grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto">
+            {doorsData.slice(0, 10).map((door) => (
+              <DoorComponent key={door.id} door={door} onClick={() => handleDoorClick(door.id)} />
+            ))}
+          </div>
+        </main>
       </div>
     </div>
   )
 }
+
+// 真鍮のアウトライン調ナビボタン
+const NAV_BUTTON_CLASS =
+  'rounded-sm border border-brass-400/40 px-4 py-2 font-serif-jp text-sm tracking-wider text-brass-300 transition-colors hover:border-brass-400 hover:bg-brass-400/10'
 
 // ドアコンポーネントのProps型
 interface DoorProps {

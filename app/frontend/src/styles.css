@@ -1,9 +1,19 @@
 @import "tailwindcss";
 
-:root {
-  --bg: #0b1020;
-  --panel: #121a33;
-  --text: #f3f6ff;
-  --muted: #99a3c1;
-  --accent: #5b8cff;
+@theme {
+  --font-serif-jp: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "Times New Roman", serif;
+
+  /* 深い紺〜チャコール（ギャラリーの壁） */
+  --color-ink-950: #0d0e16;
+  --color-ink-900: #14161f;
+  --color-ink-800: #1c1f2e;
+  --color-ink-700: #2a2d3f;
+
+  /* 金/真鍮（アクセント） */
+  --color-brass-300: #e8d5a3;
+  --color-brass-400: #c9a962;
+  --color-brass-500: #a8853d;
+
+  /* 見出し用オフホワイト */
+  --color-parchment: #f2ecdd;
 }
