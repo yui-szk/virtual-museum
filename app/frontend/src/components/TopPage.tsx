@@ -1,6 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { MdOutlineDoorFront } from 'react-icons/md'
 import { fetchPublicMuseums } from '../lib/api'
 
 // ドアの情報を定義する型
@@ -22,25 +23,32 @@ const getRandomColor = (): string => {
 //*アプリケーションのトップページ（ドアの選択画面）コンポーネント
 export default function TopPage() {
   const navigate = useNavigate()
-  const [doorsData, setDoorsData] = useState<Door[]>([])
+  // null はロード中を表す
+  const [doorsData, setDoorsData] = useState<Door[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const loadContents = async () => {
+    setDoorsData(null)
+    setError(null)
+    try {
+      const museums = await fetchPublicMuseums(1) // HACK: 仮のユーザーID
+      // 取得したデータにランダムな色を追加
+      const doorsWithColors = museums.map((museum) => ({
+        id: museum.id,
+        user_id: museum.userId,
+        name: museum.name,
+        color: getRandomColor(),
+      }))
+      setDoorsData(doorsWithColors)
+    } catch (err) {
+      console.error('美術館一覧の取得に失敗しました', err)
+      setError('美術館の一覧を取得できませんでした')
+    }
+  }
 
   useEffect(() => {
-    const loadContents = async () => {
-      try {
-        const museums = await fetchPublicMuseums(1) // HACK: 仮のユーザーID
-        // 取得したデータにランダムな色を追加
-        const doorsWithColors = museums.map((museum) => ({
-          id: museum.id,
-          user_id: museum.userId,
-          name: museum.name,
-          color: getRandomColor(),
-        }))
-        setDoorsData(doorsWithColors)
-      } catch (err) {
-        console.error('美術館一覧の取得に失敗しました', err)
-      }
-    }
     loadContents()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // ドアが押された時の動作
@@ -83,11 +91,43 @@ export default function TopPage() {
         </section>
 
         <main className="pb-12">
-          <div className="grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto">
-            {doorsData.slice(0, 10).map((door) => (
-              <DoorComponent key={door.id} door={door} onClick={() => handleDoorClick(door.id)} />
-            ))}
-          </div>
+          {error ? (
+            <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-10 text-center">
+              <p className="font-serif-jp text-lg text-parchment">{error}</p>
+              <button onClick={loadContents} className={NAV_BUTTON_CLASS}>
+                再試行
+              </button>
+            </div>
+          ) : doorsData === null ? (
+            <div className={DOOR_GRID_CLASS} role="status" aria-label="美術館を読み込み中">
+              {Array.from({ length: 10 }, (_, i) => (
+                <div key={i}>
+                  <div className="h-[250px] animate-pulse rounded-sm border border-white/5 bg-ink-700/50" />
+                  <div className="mx-auto mt-3 h-5 w-2/3 animate-pulse rounded-[2px] bg-ink-700/50" />
+                </div>
+              ))}
+            </div>
+          ) : doorsData.length === 0 ? (
+            <div className="mx-auto flex max-w-md flex-col items-center gap-3 py-10 text-center">
+              <MdOutlineDoorFront aria-hidden className="text-5xl text-brass-400/60" />
+              <p className="font-serif-jp text-lg text-parchment">
+                まだ公開されている美術館がありません
+              </p>
+              <p className="text-sm text-parchment/50">最初の扉を、あなたが作りませんか</p>
+              <button
+                onClick={handleNewCreationClick}
+                className="mt-2 rounded-sm bg-brass-400 px-5 py-2 font-serif-jp text-sm tracking-wider text-ink-900 transition-colors hover:bg-brass-300"
+              >
+                美術館を作る
+              </button>
+            </div>
+          ) : (
+            <div className={DOOR_GRID_CLASS}>
+              {doorsData.slice(0, 10).map((door) => (
+                <DoorComponent key={door.id} door={door} onClick={() => handleDoorClick(door.id)} />
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </div>
@@ -97,6 +137,9 @@ export default function TopPage() {
 // 真鍮のアウトライン調ナビボタン
 const NAV_BUTTON_CLASS =
   'rounded-sm border border-brass-400/40 px-4 py-2 font-serif-jp text-sm tracking-wider text-brass-300 transition-colors hover:border-brass-400 hover:bg-brass-400/10'
+
+// ドアグリッド（スケルトンと実表示でレイアウトを揃えるため共有）
+const DOOR_GRID_CLASS = 'grid grid-cols-5 grid-rows-2 gap-2.5 max-w-[800px] mx-auto'
 
 // ドアコンポーネントのProps型
 interface DoorProps {
