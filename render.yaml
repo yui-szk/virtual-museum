@@ -44,7 +44,7 @@ services:
     staticPublishPath: app/frontend/dist
     routes:
       - type: rewrite
-        source: /**/*
+        source: /*
         destination: /index.html
     envVars:
       # バックエンドの公開URL（例: https://backend-xxxx.onrender.com）を
